@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IdeaHub 技术架构文档</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #6366f1; --secondary: #10b981; --warning: #f59e0b; --danger: #ef4444; --cyan: #06b6d4; --pink: #ec4899; --bg: #f8fafc; --bg-dark: #0f172a; --card: #ffffff; --text: #1e293b; --text-secondary: #64748b; --text-muted: #94a3b8; --border: #e2e8f0; --code-bg: #1e293b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans SC', 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 260px; background: var(--bg-dark); color: white; padding: 1.5rem 0; overflow-y: auto; z-index: 100; }
+        .sidebar-header { padding: 0 1.5rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 1rem; }
+        .sidebar-logo { font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+        .sidebar-subtitle { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem; }
+        .nav-section { padding: 0 0.8rem; margin-bottom: 1rem; }
+        .nav-section-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); padding: 0 0.7rem; margin-bottom: 0.4rem; }
+        .nav-item { display: block; padding: 0.5rem 0.8rem; color: var(--text-muted); text-decoration: none; border-radius: 6px; font-size: 0.85rem; transition: all 0.2s; }
+        .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
+        .nav-item.active { background: var(--primary); color: white; }
+        .main { margin-left: 260px; min-height: 100vh; }
+        .header { background: white; border-bottom: 1px solid var(--border); padding: 1.2rem 1.5rem; position: sticky; top: 0; z-index: 50; }
+        .header h1 { font-size: 1.3rem; font-weight: 600; }
+        .header-meta { font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem; }
+        .content { padding: 1.5rem; max-width: 1100px; }
+        .doc-section { background: white; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 1.5rem; overflow: hidden; }
+        .doc-section-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.8rem; }
+        .doc-section-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .icon-db { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .icon-api { background: linear-gradient(135deg, #10b981, #06b6d4); }
+        .icon-page { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+        .icon-pay { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
+        .doc-section-title { font-size: 1.1rem; font-weight: 600; }
+        .doc-section-desc { font-size: 0.8rem; color: var(--text-secondary); }
+        .doc-section-body { padding: 1.5rem; }
+        .table-container { overflow-x: auto; margin: 0.8rem 0; }
+        .schema-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .schema-table th, .schema-table td { padding: 0.6rem 0.8rem; text-align: left; border-bottom: 1px solid var(--border); }
+        .schema-table th { background: var(--bg); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); }
+        .schema-table tr:hover { background: var(--bg); }
+        .field-name { font-family: 'JetBrains Mono', monospace; color: var(--primary); font-weight: 500; }
+        .field-type { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; padding: 0.15rem 0.4rem; background: var(--bg); border-radius: 4px; color: var(--text-secondary); }
+        .field-pk { background: var(--primary); color: white; }
+        .field-fk { background: var(--secondary); color: white; }
+        .field-required { color: var(--danger); font-weight: 600; }
+        .code-block { background: var(--code-bg); border-radius: 10px; overflow: hidden; margin: 0.8rem 0; }
+        .code-header { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 1rem; background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .code-lang { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+        .code-file { font-size: 0.75rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+        .code-content { padding: 1rem; overflow-x: auto; }
+        .code-content pre { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: #e2e8f0; }
+        .code-comment { color: #64748b; } .code-keyword { color: #c084fc; } .code-string { color: #86efac; } .code-number { color: #fcd34d; } .code-function { color: #7dd3fc; } .code-class { color: #fca5a5; }
+        .er-diagram { background: var(--bg); border-radius: 10px; padding: 1.5rem; margin: 0.8rem 0; overflow-x: auto; }
+        .er-tables { display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
+        .er-table { background: white; border-radius: 10px; border: 2px solid var(--border); min-width: 160px; overflow: hidden; }
+        .er-table-name { background: var(--primary); color: white; padding: 0.6rem 0.8rem; font-weight: 600; font-size: 0.8rem; text-align: center; }
+        .er-table-fields { padding: 0.4rem 0; }
+        .er-field { padding: 0.3rem 0.8rem; font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; display: flex; justify-content: space-between; }
+        .er-field-key { color: var(--warning); } .er-field-fk { color: var(--secondary); }
+        .api-list { display: flex; flex-direction: column; gap: 0.6rem; }
+        .api-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem; background: var(--bg); border-radius: 6px; }
+        .api-method { padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.65rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; min-width: 50px; text-align: center; }
+        .method-get { background: #dbeafe; color: #1d4ed8; } .method-post { background: #dcfce7; color: #15803d; } .method-put { background: #fef3c7; color: #b45309; } .method-delete { background: #fee2e2; color: #dc2626; }
+        .api-path { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; flex: 1; }
+        .api-desc { font-size: 0.8rem; color: var(--text-secondary); }
+        .page-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .page-card { background: var(--bg); border-radius: 10px; padding: 1rem; border: 1px solid var(--border); }
+        .page-preview { height: 70px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 6px; margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+        .page-name { font-weight: 600; font-size: 0.9rem; }
+        .page-route { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--primary); }
+        .page-desc { font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.3rem; }
+        .flow-chart { background: var(--bg); border-radius: 10px; padding: 1.5rem; margin: 0.8rem 0; }
+        .flow-steps { display: flex; align-items: center; justify-content: center; gap: 0.8rem; flex-wrap: wrap; }
+        .flow-step { background: white; border: 2px solid var(--border); border-radius: 10px; padding: 0.8rem 1rem; text-align: center; min-width: 90px; }
+        .flow-step-icon { font-size: 1.2rem; margin-bottom: 0.3rem; }
+        .flow-step-name { font-weight: 600; font-size: 0.8rem; }
+        .flow-step-desc { font-size: 0.7rem; color: var(--text-secondary); }
+        .flow-arrow { font-size: 1.2rem; color: var(--primary); }
+        .tech-badges { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.8rem 0; }
+        .tech-badge { padding: 0.4rem 0.8rem; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-size: 0.8rem; }
+        .alert { padding: 0.8rem 1rem; border-radius: 6px; margin: 0.8rem 0; font-size: 0.85rem; }
+        .alert-info { background: #dbeafe; border: 1px solid #93c5fd; color: #1e40af; }
+        .alert-warning { background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; }
+        .alert-success { background: #dcfce7; border: 1px solid #86efac; color: #166534; }
+        .toc { background: var(--bg); border-radius: 10px; padding: 1rem; margin-bottom: 1.5rem; }
+        .toc-title { font-weight: 600; margin-bottom: 0.8rem; font-size: 0.9rem; }
+        .toc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.4rem; }
+        .toc-item { padding: 0.5rem 0.8rem; background: white; border-radius: 6px; font-size: 0.85rem; color: var(--text); text-decoration: none; transition: all 0.2s; }
+        .toc-item:hover { background: var(--primary); color: white; }
+        .phase-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .phase-card { background: var(--bg); border-radius: 10px; padding: 1.2rem; border-left: 4px solid var(--secondary); }
+        .phase-card h4 { font-size: 0.75rem; color: var(--secondary); font-weight: 600; }
+        .phase-card h3 { font-weight: 600; margin: 0.3rem 0; }
+        .phase-card .time { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.8rem; }
+        .phase-card ul { font-size: 0.8rem; color: var(--text-secondary); padding-left: 1rem; margin: 0; }
+        @media (max-width: 1024px) { .sidebar { transform: translateX(-100%); } .main { margin-left: 0; } .phase-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">💡 IdeaHub</div>
+            <div class="sidebar-subtitle">技术架构文档 v1.0</div>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">概览</div>
+            <a href="#tech-stack" class="nav-item active">🛠️ 技术栈</a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">数据库</div>
+            <a href="#db-overview" class="nav-item">🗄️ ER图</a>
+            <a href="#db-users" class="nav-item">👤 用户表</a>
+            <a href="#db-projects" class="nav-item">💡 项目表</a>
+            <a href="#db-crowdfunding" class="nav-item">💰 众筹表</a>
+            <a href="#db-partners" class="nav-item">🤝 合伙关系</a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">API</div>
+            <a href="#api-auth" class="nav-item">🔐 认证</a>
+            <a href="#api-projects" class="nav-item">💡 项目</a>
+            <a href="#api-crowdfunding" class="nav-item">💰 众筹</a>
+            <a href="#api-messages" class="nav-item">💬 消息</a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">其他</div>
+            <a href="#pages" class="nav-item">📱 页面</a>
+            <a href="#payment" class="nav-item">💳 支付</a>
+            <a href="#roadmap" class="nav-item">📅 计划</a>
+            <a href="#revenue" class="nav-item">💎 盈利模式</a>
+        </div>
+    </nav>
+
+    <main class="main">
+        <header class="header">
+            <h1>IdeaHub 技术架构文档</h1>
+            <div class="header-meta">创意孵化 · 找合伙人 · 众筹平台</div>
+        </header>
+
+        <div class="content">
+            <div class="toc">
+                <div class="toc-title">📑 快速导航</div>
+                <div class="toc-list">
+                    <a href="#db-overview" class="toc-item">🗄️ 数据库设计</a>
+                    <a href="#api-auth" class="toc-item">🔌 后端API</a>
+                    <a href="#pages" class="toc-item">📱 前端页面</a>
+                    <a href="#payment" class="toc-item">💳 支付系统</a>
+                </div>
+            </div>
+
+            <!-- 技术栈 -->
+            <section class="doc-section" id="tech-stack">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon icon-api">🛠️</div>
+                    <div><h2 class="doc-section-title">技术栈选型</h2></div>
+                </div>
+                <div class="doc-section-body">
+                    <h4>后端</h4>
+                    <div class="tech-badges">
+                        <span class="tech-badge">🐍 Python 3.11+</span>
+                        <span class="tech-badge">⚡ FastAPI</span>
+                        <span class="tech-badge">🐘 PostgreSQL</span>
+                        <span class="tech-badge">🔴 Redis</span>
+                        <span class="tech-badge">📦 SQLAlchemy</span>
+                        <span class="tech-badge">✅ Pydantic</span>
+                        <span class="tech-badge">🔐 JWT</span>
+                    </div>
+                    <h4 style="margin-top: 1rem;">前端</h4>
+                    <div class="tech-badges">
+                        <span class="tech-badge">⚛️ React 18</span>
+                        <span class="tech-badge">🔷 TypeScript</span>
+                        <span class="tech-badge">📦 Vite</span>
+                        <span class="tech-badge">🎨 TailwindCSS</span>
+                        <span class="tech-badge">📡 React Query</span>
+                        <span class="tech-badge">🐻 Zustand</span>
+                    </div>
+                    <h4 style="margin-top: 1rem;">基础设施</h4>
+                    <div class="tech-badges">
+                        <span class="tech-badge">🐳 Docker</span>
+                        <span class="tech-badge">☸️ K8s</span>
+                        <span class="tech-badge">🔄 Nginx</span>
+                        <span class="tech-badge">☁️ OSS</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ER图 -->
+            <section class="doc-section" id="db-overview">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon icon-db">🗄️</div>
+                    <div><h2 class="doc-section-title">数据库 ER 图</h2></div>
+                </div>
+                <div class="doc-section-body">
+                    <div class="er-diagram">
+                        <div class="er-tables">
+                            <div class="er-table">
+                                <div class="er-table-name">👤 users</div>
+                                <div class="er-table-fields">
+                                    <div class="er-field"><span class="er-field-key">🔑 id</span><span>UUID</span></div>
+                                    <div class="er-field"><span>email</span><span>VARCHAR</span></div>
+                                    <div class="er-field"><span>nickname</span><span>VARCHAR</span></div>
+                                    <div class="er-field"><span>skills</span><span>JSONB</span></div>
+                                </div>
+                            </div>
+                            <div class="er-table">
+                                <div class="er-table-name">💡 projects</div>
+                                <div class="er-table-fields">
+                                    <div class="er-field"><span class="er-field-key">🔑 id</span><span>UUID</span></div>
+                                    <div class="er-field"><span class="er-field-fk">user_id</span><span>FK</span></div>
+                                    <div class="er-field"><span>title</span><span>VARCHAR</span></div>
+                                    <div class="er-field"><span>stage</span><span>ENUM</span></div>
+                                </div>
+                            </div>
+                            <div class="er-table">
+                                <div class="er-table-name">💰 crowdfundings</div>
+                                <div class="er-table-fields">
+                                    <div class="er-field"><span class="er-field-key">🔑 id</span><span>UUID</span></div>
+                                    <div class="er-field"><span class="er-field-fk">project_id</span><span>FK</span></div>
+                                    <div class="er-field"><span>goal_amount</span><span>DECIMAL</span></div>
+                                    <div class="er-field"><span>raised_amount</span><span>DECIMAL</span></div>
+                                </div>
+                            </div>
+                            <div class="er-table">
+                                <div class="er-table-name">🤝 partnerships</div>
+                                <div class="er-table-fields">
+                                    <div class="er-field"><span class="er-field-key">🔑 id</span><span>UUID</span></div>
+                                    <div class="er-field"><span class="er-field-fk">project_id</span><span>FK</span></div>
+                                    <div class="er-field"><span class="er-field-fk">user_id</span><span>FK</span></div>
+                                    <div class="er-field"><span>role</span><span>VARCHAR</span></div>
+                                </div>
+                            </div>
+                            <div class="er-table">
+                                <div class="er-table-name">💳 investments</div>
+                                <div class="er-table-fields">
+                                    <div class="er-field"><span class="er-field-key">🔑 id</span><span>UUID</span></div>
+                                    <div class="er-field"><span class="er-field-fk">user_id</span><span>FK</span></div>
+                                    <div class="er-field"><span class="er-field-fk">cf_id</span><span>FK</span></div>
+                                    <div class="er-field"><span>amount</span><span>DECIMAL</span></div>
+                                </div>
+                            </div>
+                            <div class="er-table">
+                                <div class="er-table-name">💬 messages</div>
+                                <div class="er-table-fields">
+                                    <div class="er-field"><span class="er-field-key">🔑 id</span><span>UUID</span></div>
+                                    <div class="er-field"><span class="er-field-fk">sender_id</span><span>FK</span></div>
+                                    <div class="er-field"><span class="er-field-fk">receiver_id</span><span>FK</span></div>
+                                    <div class="er-field"><span>content</span><span>TEXT</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 用户表 -->
+            <section class="doc-section" id="db-users">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon icon-db">👤</div>
+                    <div><h2 class="doc-section-title">用户表 (users)</h2></div>
+                </div>
+                <div class="doc-section-body">
+                    <div class="table-container">
+                        <table class="schema-table">
+                            <thead><tr><th>字段</th><th>类型</th><th>约束</th><th>说明</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="field-name">id</span></td><td><span class="field-type field-pk">UUID</span></td><td>PK</td><td>用户ID</td></tr>
+                                <tr><td><span class="field-name">email</span></td><td><span class="field-type">VARCHAR(255)</span></td><td><span class="field-required">UNIQUE NOT NULL</span></td><td>邮箱</td></tr>
+                                <tr><td><span class="field-name">phone</span></td><td><span class="field-type">VARCHAR(20)</span></td><td>UNIQUE</td><td>手机号</td></tr>
+                                <tr><td><span class="field-name">password_hash</span></td><td><span class="field-type">VARCHAR(255)</span></td><td>NOT NULL</td><td>密码</td></tr>
+                                <tr><td><span class="field-name">nickname</span></td><td><span class="field-type">VARCHAR(50)</span></td><td>NOT NULL</td><td>昵称</td></tr>
+                                <tr><td><span class="field-name">avatar</span></td><td><span class="field-type">VARCHAR(500)</span></td><td></td><td>头像</td></tr>
+                                <tr><td><span class="field-name">bio</span></td><td><span class="field-type">TEXT</span></td><td></td><td>简介</td></tr>
+                                <tr><td><span class="field-name">role</span></td><td><span class="field-type">ENUM</span></td><td>DEFAULT 'user'</td><td>user/creator/investor/admin</td></tr>
+                                <tr><td><span class="field-name">skills</span></td><td><span class="field-type">JSONB</span></td><td></td><td>技能 ["Python", "产品"]</td></tr>
+                                <tr><td><span class="field-name">is_verified</span></td><td><span class="field-type">BOOLEAN</span></td><td>DEFAULT false</td><td>实名认证</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 项目表 -->
+            <section class="doc-section" id="db-projects">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon icon-db">💡</div>
+                    <div><h2 class="doc-section-title">项目表 (projects)</h2></div>
+                </div>
+                <div class="doc-section-body">
+                    <div class="table-container">
+                        <table class="schema-table">
+                            <thead><tr><th>字段</th><th>类型</th><th>约束</th><th>说明</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="field-name">id</span></td><td><span class="field-type field-pk">UUID</span></td><td>PK</td><td>项目ID</td></tr>
+                                <tr><td><span class="field-name">user_id</span></td><td><span class="field-type field-fk">UUID</span></td><td>FK → users</td><td>创建者</td></tr>
+                                <tr><td><span class="field-name">title</span></td><td><span class="field-type">VARCHAR(100)</span></td><td><span class="field-required">NOT NULL</span></td><td>名称</td></tr>
+                                <tr><td><span class="field-name">slogan</span></td><td><span class="field-type">VARCHAR(200)</span></td><td></td><td>一句话介绍</td></tr>
+                                <tr><td><span class="field-name">cover_image</span></td><td><span class="field-type">VARCHAR(500)</span></td><td></td><td>封面</td></tr>
+                                <tr><td><span class="field-name">category</span></td><td><span class="field-type">VARCHAR(50)</span></td><td>NOT NULL</td><td>ai/app/game...</td></tr>
+                                <tr><td><span class="field-name">stage</span></td><td><span class="field-type">ENUM</span></td><td>NOT NULL</td><td>idea/building/funding/launched</td></tr>
+                                <tr><td><span class="field-name">content</span></td><td><span class="field-type">TEXT</span></td><td></td><td>详情(MD)</td></tr>
+                                <tr><td><span class="field-name">tags</span></td><td><span class="field-type">JSONB</span></td><td></td><td>标签</td></tr>
+                                <tr><td><span class="field-name">needs</span></td><td><span class="field-type">JSONB</span></td><td></td><td>{partner:[], funding:bool}</td></tr>
+                                <tr><td><span class="field-name">view_count</span></td><td><span class="field-type">INTEGER</span></td><td>DEFAULT 0</td><td>浏览</td></tr>
+                                <tr><td><span class="field-name">like_count</span></td><td><span class="field-type">INTEGER</span></td><td>DEFAULT 0</td><td>点赞</td></tr>
+                                <tr><td><span class="field-name">status</span></td><td><span class="field-type">ENUM</span></td><td>DEFAULT 'draft'</td><td>draft/published</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 众筹表 -->
+            <section class="doc-section" id="db-crowdfunding">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon icon-db">💰</div>
+                    <div><h2 class="doc-section-title">众筹表 & 投资表</h2></div>
+                </div>
+                <div class="doc-section-body">
+                    <h4>crowdfundings</h4>
+                    <div class="table-container">
+                        <table class="schema-table">
+                            <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="field-name">id</span></td><td><span class="field-type field-pk">UUID</span></td><td>众筹ID</td></tr>
+                                <tr><td><span class="field-name">project_id</span></td><td><span class="field-type field-fk">UUID</span></td><td>项目</td></tr>
+                                <tr><td><span class="field-name">goal_amount</span></td><td><span class="field-type">DECIMAL(12,2)</span></td><td>目标金额</td></tr>
+                                <tr><td><span class="field-name">raised_amount</span></td><td><span class="field-type">DECIMAL(12,2)</span></td><td>已筹金额</td></tr>
+                                <tr><td><span class="field-name">equity_offered</span></td><td><span class="field-type">DECIMAL(5,2)</span></td><td>出让股权%</td></tr>
+                                <tr><td><span class="field-name">investor_count</span></td><td><span class="field-type">INTEGER</span></td><td>投资人数</td></tr>
+                                <tr><td><span class="field-name">end_date</span></td><td><span class="field-type">TIMESTAMP</span></td><td>结束时间</td></tr>
+                                <tr><td><span class="field-name">status</span></td><td><span class="field-type">ENUM</span></td><td>pending/active/success/failed</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <h4 style="margin-top: 1.5rem;">investments</h4>
+                    <div class="table-container">
+                        <table class="schema-table">
+                            <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="field-name">id</span></td><td><span class="field-type field-pk">UUID</span></td><td>投资ID</td></tr>
+                                <tr><td><span class="field-name">user_id</span></td><td><span class="field-type field-fk">UUID</span></td><td>投资人</td></tr>
+                                <tr><td><span class="field-name">crowdfunding_id</span></td><td><span class="field-type field-fk">UUID</span></td><td>众筹</td></tr>
+                                <tr><td><span class="field-name">amount</span></td><td><span class="field-type">DECIMAL(12,2)</span></td><td>金额</td></tr>
+                                <tr><td><span class="field-name">payment_status</span></td><td><span class="field-type">ENUM</span></td><td>pending/paid/refunded</td></tr>
+                                <tr><td><span class="field-name">transaction_id</span></td><td><span class="field-type">VARCHAR(100)</span></td><td>交易号</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 合伙关系 -->
+            <section class="doc-section" id="db-partners">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon icon-db">🤝</div>
+                    <div><h2 class="doc-section-title">合伙关系表 (partnerships)</h2></div>
+                </div>
+                <div class="doc-section-body">
+                    <div class="table-container">
+                        <table class="schema-table">
+                            <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+                            <tbody>
+                                <tr><td><span class="field-name">id</span></td><td><span class="field-type field-pk">UUID</span></td><td>ID</td></tr>
+                                <tr><td><span class="field-name">project_id</span></td><td><span class="field-type field-fk">UUID</span></td><td>项目</td></tr>
+                                <tr><td><span class="field-name">user_id</span></td><td><span class="field-type field-fk">UUID</span></td><td>成员</td></tr>
+                                <tr><td><span class="field-name">role</span></td><td><span class="field-type">VARCHAR(50)</span></td><td>founder/tech/product</td></tr>
+                                <tr><td><span class="field-name">title</span></td><td><span class="field-type">VARCHAR(100)</span></td><td>职位</td></tr>
+                                <tr><td><span class="field-name">equity</span></td><td><span class="field-type">DECIMAL(5,2)</span></td><td>股权%</td></tr>
+                                <tr><td><span class="field-name">status</span></td><td><span class="field-type">ENUM</span></td><td>pending/approved/rejected</td></tr>
+                                <tr><td><span class="field-name">apply_message</span></td><td><span class="field-type">TEXT</span></td><td>申请留言</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 认证API -->
+            <section class="doc-section" id="api-auth">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon icon-api">🔐</div>
+                    <div><h2 class="doc-section-title">认证接口</h2></div>
+                </div>
+                <div class="doc-section-body">
+                    <div class="api-list">
+                        <div class="api-item"><span class="api-method method-post">POST</span><span class="api-path">/api/v1/auth/register</span><span class="api-desc">注册</span></div>
+                        <div class="api-item"><span class="api-method method-post">POST</span><span class="api-path">/api/v1/auth/login</span><span class="api-desc">登录</span></div>
+                        <div class="api-item"><span class="api-method method-post">POST</span><span class="api-path">/api/v1/auth/refresh</span><span class="api-desc">刷新Token</span></div>
+                        <div class="api-item"><span class="api-method method-post">POST</span><span class="api-path">/api/v1/auth/logout</span><span class="api-desc">退出</span></div>
+                        <div class="api-item"><span class="api-method method-post">POST</span><span class="api-path">/api/v1/auth/forgot-password</span><span class="api-desc">忘记密码</span></div>
+                        <div class="api-item"><span class="api-method method-post">POST</span><span class="api-path">/api/v1/auth/oauth/{provider}</span><span class="api-desc">第三方登录</span></div>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header"><span class="code-lang">Python</span><span class="code-file">api/v1/auth.py</span></div>
+                        <div class="code-content">
+<pre><span class="code-keyword">@router.post</span>(<span class="code-string">"/login"</span>, response_model=Token)
+<span class="code-keyword">async def</span> <span class="code-function">login</span>(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = <span class="code-keyword">await</span> auth_service.authenticate(
+        form_data.username, form_data.password
+    )
+    <span class="code-keyword">if not</span> user:
+        <span class="code-keyword">raise</span> HTTPException(<span class="code-number">401</span>, <span class="code-string">"用户名或密码错误"</span>)
+    <span class="code-keyword">return</span> {
+        <span class="code-string">"access_token"</span>: create_access_token(user.id),
+        <span class="code-string">"token_type"</span>: <span class="code-string">"bearer"</span>
+    }</pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 项目API -->
+            <section class="doc-section" id="api-projects">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon icon-api">💡</div>
+                    <div><h2 class="doc-section-title">项目接口</h2></div>
+                </div>
+                <div class="doc-section-body">
+                    <div class="api-list">
+                        <div class="api-item"><span class="api-method method-get">GET</span><span class="api-path">/api/v1/projects</span><span class="api-desc">列表(分页/筛选)</span></div>
+                        <div class="api-item"><span class="api-method method-get">GET</span><span class="api-path">/api/v1/projects/hot</span><span class="api-desc">热门项目</span></div>
+                        <div class="api-item"><span class="api-method method-get">GET</span><span class="api-path">/api/v1/projects/{id}</span><span class="api-desc">详情</span></div>
+                        <div class="api-item"><span class="api-method method-post">POST</span><span class="api-path">/api/v1/projects</span><span class="api-desc">创建</span></div>
+                        <div class="api-item"><span class="api-method method-put">PUT</span><span class="api-path">/api/v1/projects/{id}</span><span class="api-desc">更新</span></div>
+                        <div class="api-item"><span class="api-method method-delete">DELETE</span><span class="api-path">/api/v1/projects/{id}</span><span class="api-desc">删除</span></div>
+                        <div class="api-item"><span class="api-method method-post">POST</span><span class="api-path">/api/v1/projects/{id}/like</span><span class="api-desc">点赞</span></div>
+                        <div class="api-item"><span class="api-method method-post">POST</span><span class="api-path">/api/v1/projects/{id}/apply</span><span class="api-desc">申请加入</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 众筹API -->
+            <section class="doc-section" id="api-crowdfunding">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon icon-api">💰</div>
+                    <div><h2 class="doc-section-title">众筹接口</h2></div>
+                </div>
+                <div class="doc-section-body">
+                    <div class="api-list">
+                        <div class="api-item"><span class="api-method method-post">POST</span><span class="api-path">/api/v1/crowdfunding</span><span class="api-desc">发起众筹</span></div>
+                        <div class="api-item"><span class="api-method method-get">GET</span><span class="api-path">/api/v1/crowdfunding/{id}</span><span class="api-desc">详情</span></div>
+                        <div class="api-item"><span class="api-method method-post">POST</span><span class="api-path">/api/v1/crowdfunding/{id}/invest</span><span class="api-desc">投资</span></div>
+                        <div class="api-item"><span class="api-method method-get">GET</span><span class="api-path">/api/v1/crowdfunding/{id}/investors</span><span class="api-desc">投资人列表</span></div>
+                        <div class="api-item"><span class="api-method method-post">POST</span><span class="api-path">/api/v1/payment/callback</span><span class="api-desc">支付回调</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 消息API -->
+            <section class="doc-section" id="api-messages">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon icon-api">💬</div>
+                    <div><h2 class="doc-section-title">消息接口</h2></div>
+                </div>
+                <div class="doc-section-body">
+                    <div class="api-list">
+                        <div class="api-item"><span class="api-method method-get">GET</span><span class="api-path">/api/v1/messages/conversations</span><span class="api-desc">会话列表</span></div>
+                        <div class="api-item"><span class="api-method method-get">GET</span><span class="api-path">/api/v1/messages/{user_id}</span><span class="api-desc">消息记录</span></div>
+                        <div class="api-item"><span class="api-method method-post">POST</span><span class="api-path">/api/v1/messages</span><span class="api-desc">发送私信</span></div>
+                        <div class="api-item"><span class="api-method method-get">GET</span><span class="api-path">/api/v1/notifications</span><span class="api-desc">通知</span></div>
+                    </div>
+                    <div class="alert alert-info">💡 实时消息: <code>ws://api.ideahub.com/ws/messages</code></div>
+                </div>
+            </section>
+
+            <!-- 页面规划 -->
+            <section class="doc-section" id="pages">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon icon-page">📱</div>
+                    <div><h2 class="doc-section-title">前端页面</h2></div>
+                </div>
+                <div class="doc-section-body">
+                    <div class="page-grid">
+                        <div class="page-card"><div class="page-preview">🏠</div><div class="page-name">首页</div><div class="page-route">/</div><div class="page-desc">项目列表、筛选</div></div>
+                        <div class="page-card"><div class="page-preview" style="background: linear-gradient(135deg, #f093fb, #f5576c);">💡</div><div class="page-name">项目详情</div><div class="page-route">/project/:id</div><div class="page-desc">介绍、团队、众筹</div></div>
+                        <div class="page-card"><div class="page-preview" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">✏️</div><div class="page-name">发布项目</div><div class="page-route">/project/create</div><div class="page-desc">创建/编辑项目</div></div>
+                        <div class="page-card"><div class="page-preview" style="background: linear-gradient(135deg, #fa709a, #fee140);">🤝</div><div class="page-name">找合伙人</div><div class="page-route">/partners</div><div class="page-desc">人才库匹配</div></div>
+                        <div class="page-card"><div class="page-preview" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">💰</div><div class="page-name">众筹大厅</div><div class="page-route">/crowdfunding</div><div class="page-desc">投资机会</div></div>
+                        <div class="page-card"><div class="page-preview" style="background: linear-gradient(135deg, #d299c2, #fef9d7);">👤</div><div class="page-name">个人中心</div><div class="page-route">/profile</div><div class="page-desc">我的项目/投资</div></div>
+                        <div class="page-card"><div class="page-preview" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);">💬</div><div class="page-name">消息</div><div class="page-route">/messages</div><div class="page-desc">私信、通知</div></div>
+                        <div class="page-card"><div class="page-preview" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);">⚙️</div><div class="page-name">设置</div><div class="page-route">/settings</div><div class="page-desc">账号安全</div></div>
+                        <div class="page-card"><div class="page-preview">🔐</div><div class="page-name">登录</div><div class="page-route">/auth</div><div class="page-desc">登录/注册</div></div>
+                        <div class="page-card"><div class="page-preview" style="background: linear-gradient(135deg, #fc4a1a, #f7b733);">📊</div><div class="page-name">后台</div><div class="page-route">/admin</div><div class="page-desc">管理审核</div></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 支付系统 -->
+            <section class="doc-section" id="payment">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon icon-pay">💳</div>
+                    <div><h2 class="doc-section-title">支付系统</h2></div>
+                </div>
+                <div class="doc-section-body">
+                    <h4>支付流程</h4>
+                    <div class="flow-chart">
+                        <div class="flow-steps">
+                            <div class="flow-step"><div class="flow-step-icon">👤</div><div class="flow-step-name">下单</div></div>
+                            <span class="flow-arrow">→</span>
+                            <div class="flow-step"><div class="flow-step-icon">📝</div><div class="flow-step-name">创建订单</div></div>
+                            <span class="flow-arrow">→</span>
+                            <div class="flow-step"><div class="flow-step-icon">💳</div><div class="flow-step-name">支付</div></div>
+                            <span class="flow-arrow">→</span>
+                            <div class="flow-step"><div class="flow-step-icon">🔔</div><div class="flow-step-name">回调</div></div>
+                            <span class="flow-arrow">→</span>
+                            <div class="flow-step"><div class="flow-step-icon">✅</div><div class="flow-step-name">完成</div></div>
+                        </div>
+                    </div>
+                    <div class="alert alert-warning">⚠️ <strong>资金托管</strong>：建议使用支付宝托管，众筹成功放款，失败退回。</div>
+                    <h4 style="margin-top: 1rem;">支付平台</h4>
+                    <div class="tech-badges">
+                        <span class="tech-badge">💙 支付宝</span>
+                        <span class="tech-badge">💚 微信支付</span>
+                        <span class="tech-badge">🏦 银联</span>
+                    </div>
+                    <div class="code-block">
+                        <div class="code-header"><span class="code-lang">Python</span><span class="code-file">services/payment.py</span></div>
+                        <div class="code-content">
+<pre><span class="code-keyword">class</span> <span class="code-class">PaymentService</span>:
+    <span class="code-keyword">async def</span> <span class="code-function">create_payment</span>(self, investment) -> <span class="code-keyword">str</span>:
+        order = self.alipay.api_alipay_trade_page_pay(
+            out_trade_no=investment.order_no,
+            total_amount=<span class="code-keyword">str</span>(investment.amount),
+            subject=<span class="code-keyword">f</span><span class="code-string">"投资: {investment.project_title}"</span>,
+            notify_url=settings.NOTIFY_URL
+        )
+        <span class="code-keyword">return</span> <span class="code-keyword">f</span><span class="code-string">"https://openapi.alipay.com/gateway.do?{order}"</span>
+    
+    <span class="code-keyword">async def</span> <span class="code-function">process_success</span>(self, order_no, transaction_id):
+        investment = <span class="code-keyword">await</span> self.repo.get_by_order(order_no)
+        investment.payment_status = <span class="code-string">"paid"</span>
+        investment.transaction_id = transaction_id
+        <span class="code-comment"># 更新众筹金额</span>
+        cf = investment.crowdfunding
+        cf.raised_amount += investment.amount
+        cf.investor_count += <span class="code-number">1</span></pre>
+                        </div>
+                    </div>
+                    <h4 style="margin-top: 1rem;">安全措施</h4>
+                    <div class="alert alert-success">🔐 签名验证 | 幂等处理 | 金额校验 | HTTPS | 日志审计</div>
+                </div>
+            </section>
+
+            <!-- 开发计划 -->
+            <section class="doc-section" id="roadmap">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon icon-page">📅</div>
+                    <div><h2 class="doc-section-title">开发计划</h2></div>
+                </div>
+                <div class="doc-section-body">
+                    <div class="phase-grid">
+                        <div class="phase-card">
+                            <h4>Phase 1 · MVP</h4>
+                            <h3>核心功能</h3>
+                            <div class="time">4-6 周</div>
+                            <ul><li>注册/登录</li><li>项目发布/浏览</li><li>项目详情</li><li>搜索筛选</li><li>个人中心</li></ul>
+                        </div>
+                        <div class="phase-card" style="border-color: var(--primary);">
+                            <h4 style="color: var(--primary);">Phase 2 · 社交</h4>
+                            <h3>互动功能</h3>
+                            <div class="time">3-4 周</div>
+                            <ul><li>私信系统</li><li>评论/点赞</li><li>合伙人匹配</li><li>申请加入</li><li>通知系统</li></ul>
+                        </div>
+                        <div class="phase-card" style="border-color: var(--warning);">
+                            <h4 style="color: var(--warning);">Phase 3 · 交易</h4>
+                            <h3>众筹系统</h3>
+                            <div class="time">4-6 周</div>
+                            <ul><li>众筹发起</li><li>支付对接</li><li>投资记录</li><li>资金托管</li><li>退款机制</li></ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 盈利模式 -->
+            <section class="doc-section" id="revenue">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon icon-pay">💎</div>
+                    <div><h2 class="doc-section-title">盈利模式</h2></div>
+                </div>
+                <div class="doc-section-body">
+                    <h4>1️⃣ 交易抽成（核心收入）</h4>
+                    <div class="table-container">
+                        <table class="schema-table">
+                            <thead><tr><th>场景</th><th>抽成比例</th><th>示例</th></tr></thead>
+                            <tbody>
+                                <tr><td>众筹成功</td><td><span class="field-type" style="background:#dcfce7;color:#166534;">5-8%</span></td><td>众筹100万，平台抽5-8万</td></tr>
+                                <tr><td>股权交易</td><td><span class="field-type" style="background:#dbeafe;color:#1d4ed8;">2-5%</span></td><td>股权转让时收取服务费</td></tr>
+                                <tr><td>合伙人匹配</td><td><span class="field-type" style="background:#fef3c7;color:#92400e;">首月10%</span></td><td>匹配成功收一次性费用</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h4 style="margin-top:1.5rem;">2️⃣ 会员订阅</h4>
+                    <div class="table-container">
+                        <table class="schema-table">
+                            <thead><tr><th>等级</th><th>价格</th><th>权益</th></tr></thead>
+                            <tbody>
+                                <tr><td>🆓 免费版</td><td>¥0</td><td>浏览项目、发布1个项目</td></tr>
+                                <tr><td>🚀 创业者版</td><td>¥99/月</td><td>无限发布、优先展示、数据分析</td></tr>
+                                <tr><td>💰 投资人版</td><td>¥299/月</td><td>提前看项目、直联创始人、投资报告</td></tr>
+                                <tr><td>🏢 企业版</td><td>¥999/月</td><td>专属顾问、尽调服务、法律模板</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h4 style="margin-top:1.5rem;">3️⃣ 增值服务</h4>
+                    <div class="tech-badges">
+                        <span class="tech-badge">📢 项目推广 ¥500-5000</span>
+                        <span class="tech-badge">📄 BP优化 ¥2000-8000</span>
+                        <span class="tech-badge">⚖️ 法律服务 ¥3000起</span>
+                        <span class="tech-badge">📊 财务顾问 ¥5000起</span>
+                        <span class="tech-badge">🎤 路演培训 ¥8000起</span>
+                    </div>
+
+                    <h4 style="margin-top:1.5rem;">4️⃣ 广告 & 数据服务</h4>
+                    <div class="tech-badges">
+                        <span class="tech-badge">Banner广告 ¥5000-20000/周</span>
+                        <span class="tech-badge">品牌专区 ¥50000/月</span>
+                        <span class="tech-badge">行业报告 ¥5000-20000/份</span>
+                        <span class="tech-badge">数据API ¥30000/年</span>
+                    </div>
+
+                    <h4 style="margin-top:1.5rem;">📈 年收入预估（运营1年后）</h4>
+                    <div class="phase-grid" style="grid-template-columns: repeat(4, 1fr);">
+                        <div class="phase-card" style="text-align:center;border-color:#10b981;">
+                            <h4 style="color:#10b981;">众筹抽成</h4>
+                            <h3 style="font-size:1.5rem;">¥250万</h3>
+                        </div>
+                        <div class="phase-card" style="text-align:center;border-color:#6366f1;">
+                            <h4 style="color:#6366f1;">会员订阅</h4>
+                            <h3 style="font-size:1.5rem;">¥150万</h3>
+                        </div>
+                        <div class="phase-card" style="text-align:center;border-color:#f59e0b;">
+                            <h4 style="color:#f59e0b;">增值服务</h4>
+                            <h3 style="font-size:1.5rem;">¥100万</h3>
+                        </div>
+                        <div class="phase-card" style="text-align:center;border-color:#ec4899;">
+                            <h4 style="color:#ec4899;">广告收入</h4>
+                            <h3 style="font-size:1.5rem;">¥50万</h3>
+                        </div>
+                    </div>
+                    <div class="alert alert-success" style="text-align:center;font-size:1.1rem;margin-top:1rem;">
+                        <strong>预计年收入：¥550万+</strong>（基于5万用户、4%付费转化率）
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+</body>
+</html>

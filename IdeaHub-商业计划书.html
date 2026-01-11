@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IdeaHub 商业计划书</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --pink: #ec4899;
+            --cyan: #06b6d4;
+            --purple: #8b5cf6;
+            --bg: #ffffff;
+            --bg-alt: #f8fafc;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans SC', 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.8; }
+        
+        /* 封面 */
+        .cover {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .cover-content { position: relative; z-index: 1; max-width: 800px; }
+        .cover-logo { font-size: 5rem; margin-bottom: 1rem; }
+        .cover-title { font-size: 4rem; font-weight: 800; margin-bottom: 1rem; text-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .cover-subtitle { font-size: 1.8rem; opacity: 0.9; margin-bottom: 0.5rem; }
+        .cover-tagline { font-size: 1.2rem; opacity: 0.8; margin-bottom: 3rem; }
+        .cover-meta { display: flex; gap: 3rem; justify-content: center; font-size: 0.95rem; opacity: 0.8; }
+        .cover-divider { width: 100px; height: 4px; background: rgba(255,255,255,0.5); border-radius: 2px; margin: 2rem auto; }
+        
+        /* 目录 */
+        .toc-page {
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            background: var(--bg-alt);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .toc-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 3rem; color: var(--primary); }
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            max-width: 900px;
+            width: 100%;
+        }
+        .toc-item {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+        .toc-item:hover { transform: translateY(-4px); box-shadow: 0 10px 40px rgba(99,102,241,0.15); border-color: var(--primary); }
+        .toc-num { font-size: 2rem; font-weight: 800; color: var(--primary); opacity: 0.3; }
+        .toc-name { font-size: 1.1rem; font-weight: 600; margin-top: 0.5rem; }
+        .toc-desc { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.3rem; }
+        
+        /* 页面通用 */
+        .page {
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .page-num { font-size: 0.85rem; color: var(--primary); font-weight: 600; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+        .page-title { font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* 内容样式 */
+        h3 { font-size: 1.4rem; font-weight: 600; margin: 2rem 0 1rem; color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
+        h3::before { content: ''; width: 4px; height: 24px; background: var(--primary); border-radius: 2px; }
+        h4 { font-size: 1.1rem; font-weight: 600; margin: 1.5rem 0 0.8rem; color: var(--text-secondary); }
+        p { margin-bottom: 1rem; color: var(--text-secondary); }
+        
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            border-radius: 16px;
+            padding: 1.5rem;
+            color: white;
+            text-align: center;
+        }
+        .stat-card.green { background: linear-gradient(135deg, var(--secondary), var(--cyan)); }
+        .stat-card.orange { background: linear-gradient(135deg, var(--warning), #f97316); }
+        .stat-card.pink { background: linear-gradient(135deg, var(--pink), var(--purple)); }
+        .stat-value { font-size: 2.5rem; font-weight: 800; }
+        .stat-label { font-size: 0.85rem; opacity: 0.9; margin-top: 0.3rem; }
+        
+        /* 表格 */
+        .table-container { overflow-x: auto; margin: 1.5rem 0; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: var(--bg-alt); font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+        tr:hover { background: var(--bg-alt); }
+        
+        /* 特色框 */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .feature-card {
+            background: var(--bg-alt);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        .feature-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .feature-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+        .feature-title { font-weight: 600; margin-bottom: 0.5rem; }
+        .feature-desc { font-size: 0.9rem; color: var(--text-secondary); }
+        
+        /* 流程图 */
+        .flow-horizontal {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        .flow-step {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            text-align: center;
+            min-width: 120px;
+        }
+        .flow-step-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
+        .flow-step-name { font-weight: 600; font-size: 0.9rem; }
+        .flow-arrow { font-size: 1.5rem; color: var(--primary); }
+        
+        /* 时间线 */
+        .timeline { margin: 2rem 0; }
+        .timeline-item {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        .timeline-marker {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .timeline-content {
+            flex: 1;
+            background: var(--bg-alt);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+        }
+        .timeline-title { font-weight: 600; margin-bottom: 0.5rem; }
+        .timeline-desc { font-size: 0.9rem; color: var(--text-secondary); }
+        
+        /* 定价卡片 */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .pricing-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            border: 2px solid var(--border);
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .pricing-card.featured {
+            border-color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: 0 10px 40px rgba(99,102,241,0.2);
+        }
+        .pricing-badge {
+            background: var(--primary);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        .pricing-name { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .pricing-price { font-size: 2.5rem; font-weight: 800; color: var(--primary); }
+        .pricing-period { font-size: 0.85rem; color: var(--text-muted); }
+        .pricing-features { list-style: none; margin: 1.5rem 0; text-align: left; font-size: 0.9rem; }
+        .pricing-features li { padding: 0.5rem 0; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem; }
+        .pricing-features li::before { content: '✓'; color: var(--secondary); font-weight: 700; }
+        
+        /* 竞品对比 */
+        .compare-table th:first-child { width: 200px; }
+        .compare-yes { color: var(--secondary); font-weight: 600; }
+        .compare-no { color: var(--text-muted); }
+        .compare-highlight { background: rgba(99,102,241,0.1); }
+        
+        /* 财务预测 */
+        .finance-chart {
+            background: var(--bg-alt);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 250px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1rem;
+        }
+        .chart-bar-group { text-align: center; flex: 1; }
+        .chart-bar {
+            width: 60px;
+            margin: 0 auto;
+            background: linear-gradient(180deg, var(--primary), var(--purple));
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .chart-bar:hover { transform: scaleY(1.05); }
+        .chart-bar-value {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--primary);
+        }
+        .chart-bar-label { margin-top: 0.8rem; font-size: 0.85rem; color: var(--text-secondary); }
+        
+        /* 团队 */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .team-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        .team-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--pink));
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+        }
+        .team-name { font-weight: 600; margin-bottom: 0.3rem; }
+        .team-role { font-size: 0.85rem; color: var(--primary); margin-bottom: 0.5rem; }
+        .team-bio { font-size: 0.8rem; color: var(--text-secondary); }
+        
+        /* 融资需求 */
+        .funding-use {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .funding-item {
+            background: var(--bg-alt);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .funding-percent {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .funding-detail h4 { margin: 0 0 0.3rem; font-size: 1rem; }
+        .funding-detail p { margin: 0; font-size: 0.85rem; color: var(--text-secondary); }
+        
+        /* 页脚 */
+        .footer {
+            background: var(--text);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        .footer-logo { font-size: 2rem; margin-bottom: 1rem; }
+        .footer-text { opacity: 0.7; font-size: 0.9rem; }
+        
+        /* 打印样式 */
+        @media print {
+            .cover, .page { min-height: auto; page-break-after: always; }
+            .toc-item:hover, .feature-card:hover { transform: none; box-shadow: none; }
+        }
+        
+        @media (max-width: 768px) {
+            .cover-title { font-size: 2.5rem; }
+            .toc-grid, .stats-grid, .feature-grid, .pricing-grid, .team-grid { grid-template-columns: 1fr; }
+            .pricing-card.featured { transform: none; }
+            .funding-use { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 封面 -->
+    <section class="cover">
+        <div class="cover-content">
+            <div class="cover-logo">💡</div>
+            <h1 class="cover-title">IdeaHub</h1>
+            <p class="cover-subtitle">创意孵化 · 合伙匹配 · 项目众筹</p>
+            <p class="cover-tagline">让好想法遇见对的人</p>
+            <div class="cover-divider"></div>
+            <p style="font-size: 1.5rem; margin-bottom: 2rem;">商 业 计 划 书</p>
+            <div class="cover-meta">
+                <span>📅 2025年1月</span>
+                <span>📋 V1.0</span>
+                <span>🔒 商业机密</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 目录 -->
+    <section class="toc-page">
+        <h2 class="toc-title">📑 目录</h2>
+        <div class="toc-grid">
+            <a href="#executive" class="toc-item">
+                <div class="toc-num">01</div>
+                <div class="toc-name">执行摘要</div>
+                <div class="toc-desc">项目概述与核心亮点</div>
+            </a>
+            <a href="#problem" class="toc-item">
+                <div class="toc-num">02</div>
+                <div class="toc-name">市场痛点</div>
+                <div class="toc-desc">创业者面临的问题</div>
+            </a>
+            <a href="#solution" class="toc-item">
+                <div class="toc-num">03</div>
+                <div class="toc-name">解决方案</div>
+                <div class="toc-desc">IdeaHub 产品介绍</div>
+            </a>
+            <a href="#market" class="toc-item">
+                <div class="toc-num">04</div>
+                <div class="toc-name">市场分析</div>
+                <div class="toc-desc">市场规模与机会</div>
+            </a>
+            <a href="#business" class="toc-item">
+                <div class="toc-num">05</div>
+                <div class="toc-name">商业模式</div>
+                <div class="toc-desc">盈利模式与定价策略</div>
+            </a>
+            <a href="#competition" class="toc-item">
+                <div class="toc-num">06</div>
+                <div class="toc-name">竞争分析</div>
+                <div class="toc-desc">竞品对比与优势</div>
+            </a>
+            <a href="#operation" class="toc-item">
+                <div class="toc-num">07</div>
+                <div class="toc-name">运营策略</div>
+                <div class="toc-desc">获客与增长计划</div>
+            </a>
+            <a href="#finance" class="toc-item">
+                <div class="toc-num">08</div>
+                <div class="toc-name">财务预测</div>
+                <div class="toc-desc">收入预测与成本</div>
+            </a>
+            <a href="#team" class="toc-item">
+                <div class="toc-num">09</div>
+                <div class="toc-name">团队介绍</div>
+                <div class="toc-desc">核心团队与顾问</div>
+            </a>
+            <a href="#milestone" class="toc-item">
+                <div class="toc-num">10</div>
+                <div class="toc-name">发展规划</div>
+                <div class="toc-desc">里程碑与时间表</div>
+            </a>
+            <a href="#funding" class="toc-item">
+                <div class="toc-num">11</div>
+                <div class="toc-name">融资需求</div>
+                <div class="toc-desc">融资计划与用途</div>
+            </a>
+            <a href="#appendix" class="toc-item">
+                <div class="toc-num">12</div>
+                <div class="toc-name">附录</div>
+                <div class="toc-desc">补充材料</div>
+            </a>
+        </div>
+    </section>
+
+    <!-- 01 执行摘要 -->
+    <section class="page" id="executive">
+        <div class="page-header">
+            <div class="page-num">SECTION 01</div>
+            <h2 class="page-title">执行摘要</h2>
+        </div>
+        
+        <h3>项目简介</h3>
+        <p><strong>IdeaHub</strong> 是一个连接创意、人才和资本的一站式创业服务平台。我们帮助创业者发布项目、寻找合伙人、获得众筹资金，让每一个好想法都有机会变成现实。</p>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">1200万</div>
+                <div class="stat-label">目标市场规模</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-value">550万</div>
+                <div class="stat-label">年收入预期(Y1)</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-value">5万+</div>
+                <div class="stat-label">目标用户(Y1)</div>
+            </div>
+            <div class="stat-card pink">
+                <div class="stat-value">500万</div>
+                <div class="stat-label">种子轮融资</div>
+            </div>
+        </div>
+
+        <h3>核心亮点</h3>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-title">精准匹配</div>
+                <div class="feature-desc">AI驱动的合伙人智能匹配系统，基于技能、经验、兴趣多维度推荐</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <div class="feature-title">众筹+股权</div>
+                <div class="feature-desc">创新的众筹模式，支持产品预售和股权众筹，满足不同融资需求</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <div class="feature-title">资金安全</div>
+                <div class="feature-desc">第三方资金托管，众筹成功放款、失败退款，保障投资人权益</div>
+            </div>
+        </div>
+
+        <h3>愿景与使命</h3>
+        <p><strong>愿景：</strong>成为中国最具影响力的创业生态平台，孵化10000个成功项目</p>
+        <p><strong>使命：</strong>降低创业门槛，让每个有梦想的人都能获得资源支持</p>
+    </section>
+
+    <!-- 02 市场痛点 -->
+    <section class="page" id="problem">
+        <div class="page-header">
+            <div class="page-num">SECTION 02</div>
+            <h2 class="page-title">市场痛点</h2>
+        </div>
+
+        <h3>创业者的困境</h3>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">😰</div>
+                <div class="feature-title">找不到合伙人</div>
+                <div class="feature-desc">技术人员想创业找不到产品合伙人，产品经理找不到技术大牛，人脉圈子有限</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💸</div>
+                <div class="feature-title">融资难</div>
+                <div class="feature-desc">早期项目很难获得投资机构关注，个人投资者缺乏靠谱的投资渠道</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📢</div>
+                <div class="feature-title">项目曝光难</div>
+                <div class="feature-desc">好项目无人知晓，缺乏展示平台和推广渠道，酒香也怕巷子深</div>
+            </div>
+        </div>
+
+        <h3>投资人的痛点</h3>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <div class="feature-title">项目源有限</div>
+                <div class="feature-desc">优质早期项目难寻，信息不对称严重</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚠️</div>
+                <div class="feature-title">风险难控</div>
+                <div class="feature-desc">缺乏有效的项目筛选和尽调机制</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">投后管理弱</div>
+                <div class="feature-desc">小额投资难以跟踪项目进展</div>
+            </div>
+        </div>
+
+        <h3>市场数据验证</h3>
+        <div class="table-container">
+            <table>
+                <tr><th>痛点</th><th>数据支撑</th></tr>
+                <tr><td>创业失败率</td><td><strong>90%</strong> 的创业项目在3年内失败</td></tr>
+                <tr><td>合伙人问题</td><td><strong>65%</strong> 的创业失败源于团队问题</td></tr>
+                <tr><td>融资困难</td><td>只有 <strong>1%</strong> 的项目能获得天使投资</td></tr>
+                <tr><td>资源匮乏</td><td><strong>78%</strong> 创业者认为缺乏资源支持</td></tr>
+            </table>
+        </div>
+    </section>
+
+    <!-- 03 解决方案 -->
+    <section class="page" id="solution">
+        <div class="page-header">
+            <div class="page-num">SECTION 03</div>
+            <h2 class="page-title">解决方案</h2>
+        </div>
+
+        <h3>IdeaHub 平台功能</h3>
+        
+        <h4>🚀 项目发布与展示</h4>
+        <p>创业者可以发布项目想法，详细描述项目背景、商业模式、团队需求等。平台提供专业的项目展示页面，支持多媒体内容，让项目更具吸引力。</p>
+
+        <h4>🤝 智能合伙人匹配</h4>
+        <p>基于AI算法，根据技能、经验、地区、创业意愿等多维度进行智能匹配。创业者可以浏览人才库，也可以被动接受推荐。</p>
+
+        <h4>💰 众筹融资</h4>
+        <p>支持产品众筹和股权众筹两种模式。资金由第三方托管，众筹成功后自动放款，失败则全额退回。</p>
+
+        <h4>💬 社区交流</h4>
+        <p>创业话题讨论、经验分享、资源对接。形成活跃的创业社区生态。</p>
+
+        <h3>用户旅程</h3>
+        <div class="flow-horizontal">
+            <div class="flow-step"><div class="flow-step-icon">📝</div><div class="flow-step-name">注册账号</div></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><div class="flow-step-icon">💡</div><div class="flow-step-name">发布项目</div></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><div class="flow-step-icon">🤝</div><div class="flow-step-name">匹配合伙人</div></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><div class="flow-step-icon">💰</div><div class="flow-step-name">发起众筹</div></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><div class="flow-step-icon">🚀</div><div class="flow-step-name">项目启动</div></div>
+        </div>
+
+        <h3>技术优势</h3>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-title">AI 智能匹配</div>
+                <div class="feature-desc">机器学习算法，匹配准确率 85%+</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-title">安全可靠</div>
+                <div class="feature-desc">银行级加密，资金托管保障</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <div class="feature-title">全端覆盖</div>
+                <div class="feature-desc">Web + iOS + Android + 小程序</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 04 市场分析 -->
+    <section class="page" id="market">
+        <div class="page-header">
+            <div class="page-num">SECTION 04</div>
+            <h2 class="page-title">市场分析</h2>
+        </div>
+
+        <h3>市场规模</h3>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">4800万</div>
+                <div class="stat-label">中小企业数量</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-value">500万</div>
+                <div class="stat-label">年新增创业者</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-value">2000亿</div>
+                <div class="stat-label">股权众筹市场</div>
+            </div>
+            <div class="stat-card pink">
+                <div class="stat-value">15%</div>
+                <div class="stat-label">年增长率</div>
+            </div>
+        </div>
+
+        <h3>TAM / SAM / SOM</h3>
+        <div class="table-container">
+            <table>
+                <tr><th>市场层级</th><th>规模</th><th>说明</th></tr>
+                <tr><td><strong>TAM</strong> 总可触达市场</td><td>¥2000亿</td><td>中国创业服务市场总规模</td></tr>
+                <tr><td><strong>SAM</strong> 可服务市场</td><td>¥200亿</td><td>线上创业服务平台市场</td></tr>
+                <tr><td><strong>SOM</strong> 可获得市场</td><td>¥20亿</td><td>5年内可争取的市场份额</td></tr>
+            </table>
+        </div>
+
+        <h3>目标用户画像</h3>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">👨‍💻</div>
+                <div class="feature-title">技术创业者</div>
+                <div class="feature-desc">25-35岁，有技术背景，想找产品/运营合伙人</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💼</div>
+                <div class="feature-title">产品经理</div>
+                <div class="feature-desc">有创业想法，需要技术团队支持</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <div class="feature-title">天使投资人</div>
+                <div class="feature-desc">寻找早期项目，愿意小额多投</div>
+            </div>
+        </div>
+
+        <h3>市场趋势</h3>
+        <p>✅ 灵活就业和副业创业成为趋势，创业门槛降低</p>
+        <p>✅ Z世代更愿意尝试创业，创业年轻化明显</p>
+        <p>✅ 远程协作普及，跨地域团队组建成为可能</p>
+        <p>✅ 政策支持双创，创业环境持续优化</p>
+    </section>
+
+    <!-- 05 商业模式 -->
+    <section class="page" id="business">
+        <div class="page-header">
+            <div class="page-num">SECTION 05</div>
+            <h2 class="page-title">商业模式</h2>
+        </div>
+
+        <h3>收入来源</h3>
+        <div class="table-container">
+            <table>
+                <tr><th>收入类型</th><th>抽成/费用</th><th>预期占比</th><th>说明</th></tr>
+                <tr><td>🏆 众筹抽成</td><td>5-8%</td><td>45%</td><td>众筹成功后收取服务费</td></tr>
+                <tr><td>👑 会员订阅</td><td>¥99-999/月</td><td>27%</td><td>创业者/投资人付费会员</td></tr>
+                <tr><td>⭐ 增值服务</td><td>¥500-10000</td><td>18%</td><td>BP优化、法律、财务服务</td></tr>
+                <tr><td>📢 广告收入</td><td>¥5000-50000</td><td>10%</td><td>品牌广告、推广位</td></tr>
+            </table>
+        </div>
+
+        <h3>会员体系</h3>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <div class="pricing-name">🆓 免费版</div>
+                <div class="pricing-price">¥0</div>
+                <div class="pricing-period">永久免费</div>
+                <ul class="pricing-features">
+                    <li>浏览所有项目</li>
+                    <li>发布1个项目</li>
+                    <li>基础私信功能</li>
+                    <li>社区参与</li>
+                </ul>
+            </div>
+            <div class="pricing-card featured">
+                <div class="pricing-badge">最受欢迎</div>
+                <div class="pricing-name">🚀 创业者版</div>
+                <div class="pricing-price">¥99</div>
+                <div class="pricing-period">/ 月</div>
+                <ul class="pricing-features">
+                    <li>无限发布项目</li>
+                    <li>优先展示排名</li>
+                    <li>数据分析报告</li>
+                    <li>AI合伙人推荐</li>
+                    <li>专属客服</li>
+                </ul>
+            </div>
+            <div class="pricing-card">
+                <div class="pricing-name">💰 投资人版</div>
+                <div class="pricing-price">¥299</div>
+                <div class="pricing-period">/ 月</div>
+                <ul class="pricing-features">
+                    <li>提前48h看项目</li>
+                    <li>直联创始人</li>
+                    <li>投资数据报告</li>
+                    <li>项目尽调协助</li>
+                    <li>投后管理工具</li>
+                </ul>
+            </div>
+            <div class="pricing-card">
+                <div class="pricing-name">🏢 企业版</div>
+                <div class="pricing-price">¥999</div>
+                <div class="pricing-period">/ 月</div>
+                <ul class="pricing-features">
+                    <li>专属企业页面</li>
+                    <li>批量招募人才</li>
+                    <li>法律协议模板</li>
+                    <li>财务顾问服务</li>
+                    <li>1对1专属顾问</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>增值服务清单</h3>
+        <div class="table-container">
+            <table>
+                <tr><th>服务</th><th>价格</th><th>内容</th></tr>
+                <tr><td>📢 项目推广</td><td>¥500-5000</td><td>首页推荐、精选推送、Banner展示</td></tr>
+                <tr><td>📄 BP优化</td><td>¥2000-8000</td><td>专业商业计划书撰写与美化</td></tr>
+                <tr><td>⚖️ 法律服务</td><td>¥3000起</td><td>股权协议、投资条款、公司注册</td></tr>
+                <tr><td>📊 财务顾问</td><td>¥5000起</td><td>估值分析、融资方案设计</td></tr>
+                <tr><td>🎤 路演培训</td><td>¥8000起</td><td>一对一路演辅导、模拟演练</td></tr>
+            </table>
+        </div>
+    </section>
+
+    <!-- 06 竞争分析 -->
+    <section class="page" id="competition">
+        <div class="page-header">
+            <div class="page-num">SECTION 06</div>
+            <h2 class="page-title">竞争分析</h2>
+        </div>
+
+        <h3>竞品对比</h3>
+        <div class="table-container">
+            <table class="compare-table">
+                <tr>
+                    <th>功能/平台</th>
+                    <th class="compare-highlight">IdeaHub</th>
+                    <th>创业邦</th>
+                    <th>36氪</th>
+                    <th>众筹网</th>
+                </tr>
+                <tr>
+                    <td>项目展示</td>
+                    <td class="compare-highlight compare-yes">✓</td>
+                    <td class="compare-yes">✓</td>
+                    <td class="compare-yes">✓</td>
+                    <td class="compare-yes">✓</td>
+                </tr>
+                <tr>
+                    <td>合伙人匹配</td>
+                    <td class="compare-highlight compare-yes">✓ AI智能</td>
+                    <td class="compare-no">✗</td>
+                    <td class="compare-no">✗</td>
+                    <td class="compare-no">✗</td>
+                </tr>
+                <tr>
+                    <td>众筹融资</td>
+                    <td class="compare-highlight compare-yes">✓ 股权+产品</td>
+                    <td class="compare-no">✗</td>
+                    <td class="compare-no">✗</td>
+                    <td class="compare-yes">✓ 产品</td>
+                </tr>
+                <tr>
+                    <td>资金托管</td>
+                    <td class="compare-highlight compare-yes">✓</td>
+                    <td class="compare-no">✗</td>
+                    <td class="compare-no">✗</td>
+                    <td class="compare-yes">✓</td>
+                </tr>
+                <tr>
+                    <td>社区互动</td>
+                    <td class="compare-highlight compare-yes">✓</td>
+                    <td class="compare-yes">✓</td>
+                    <td class="compare-yes">✓</td>
+                    <td class="compare-no">✗</td>
+                </tr>
+                <tr>
+                    <td>增值服务</td>
+                    <td class="compare-highlight compare-yes">✓ 一站式</td>
+                    <td class="compare-yes">部分</td>
+                    <td class="compare-yes">部分</td>
+                    <td class="compare-no">✗</td>
+                </tr>
+            </table>
+        </div>
+
+        <h3>竞争优势</h3>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <div class="feature-title">一站式服务</div>
+                <div class="feature-desc">项目+人才+资金，一个平台全搞定</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-title">AI 驱动</div>
+                <div class="feature-desc">智能匹配，提高效率和成功率</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-title">安全合规</div>
+                <div class="feature-desc">资金托管，法律保障，降低风险</div>
+            </div>
+        </div>
+
+        <h3>护城河</h3>
+        <p><strong>网络效应：</strong>用户越多，匹配越精准，价值越大</p>
+        <p><strong>数据壁垒：</strong>积累的项目、人才、投资数据形成壁垒</p>
+        <p><strong>品牌效应：</strong>成功案例积累，形成口碑和信任</p>
+        <p><strong>生态闭环：</strong>从创意到融资的完整闭环，用户粘性强</p>
+    </section>
+
+    <!-- 07 运营策略 -->
+    <section class="page" id="operation">
+        <div class="page-header">
+            <div class="page-num">SECTION 07</div>
+            <h2 class="page-title">运营策略</h2>
+        </div>
+
+        <h3>获客策略</h3>
+        <div class="table-container">
+            <table>
+                <tr><th>渠道</th><th>策略</th><th>预期CAC</th></tr>
+                <tr><td>🔍 SEO/SEM</td><td>创业、融资等关键词优化</td><td>¥50-100</td></tr>
+                <tr><td>📱 社交媒体</td><td>抖音/小红书创业内容运营</td><td>¥30-80</td></tr>
+                <tr><td>🤝 合作推广</td><td>孵化器、众创空间合作</td><td>¥20-50</td></tr>
+                <tr><td>👥 老带新</td><td>邀请奖励机制</td><td>¥30-60</td></tr>
+                <tr><td>📰 PR传播</td><td>成功案例媒体报道</td><td>¥10-30</td></tr>
+            </table>
+        </div>
+
+        <h3>用户增长飞轮</h3>
+        <div class="flow-horizontal">
+            <div class="flow-step"><div class="flow-step-icon">💡</div><div class="flow-step-name">优质项目</div></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><div class="flow-step-icon">💰</div><div class="flow-step-name">吸引投资人</div></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><div class="flow-step-icon">🏆</div><div class="flow-step-name">成功案例</div></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><div class="flow-step-icon">📢</div><div class="flow-step-name">口碑传播</div></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><div class="flow-step-icon">👥</div><div class="flow-step-name">更多用户</div></div>
+        </div>
+
+        <h3>冷启动策略</h3>
+        <p><strong>第一阶段（0-3月）：</strong>邀请100个种子用户（创业者+投资人），免费使用，收集反馈</p>
+        <p><strong>第二阶段（3-6月）：</strong>与5-10家孵化器合作，批量导入项目</p>
+        <p><strong>第三阶段（6-12月）：</strong>打造3-5个成功案例，开始规模化推广</p>
+
+        <h3>留存策略</h3>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">数据价值</div>
+                <div class="feature-desc">项目数据分析、投资报告，持续提供价值</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔔</div>
+                <div class="feature-title">智能推送</div>
+                <div class="feature-desc">匹配项目/人才推送，保持活跃</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏆</div>
+                <div class="feature-title">成长体系</div>
+                <div class="feature-desc">积分、等级、徽章，激励持续参与</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 08 财务预测 -->
+    <section class="page" id="finance">
+        <div class="page-header">
+            <div class="page-num">SECTION 08</div>
+            <h2 class="page-title">财务预测</h2>
+        </div>
+
+        <h3>收入预测（3年）</h3>
+        <div class="finance-chart">
+            <div class="chart-bars">
+                <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 55px;"><span class="chart-bar-value">¥550万</span></div>
+                    <div class="chart-bar-label">Year 1</div>
+                </div>
+                <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 150px;"><span class="chart-bar-value">¥1500万</span></div>
+                    <div class="chart-bar-label">Year 2</div>
+                </div>
+                <div class="chart-bar-group">
+                    <div class="chart-bar" style="height: 250px;"><span class="chart-bar-value">¥4000万</span></div>
+                    <div class="chart-bar-label">Year 3</div>
+                </div>
+            </div>
+        </div>
+
+        <h3>收入构成预测</h3>
+        <div class="table-container">
+            <table>
+                <tr><th>收入来源</th><th>Year 1</th><th>Year 2</th><th>Year 3</th></tr>
+                <tr><td>众筹抽成</td><td>¥250万</td><td>¥700万</td><td>¥1800万</td></tr>
+                <tr><td>会员订阅</td><td>¥150万</td><td>¥450万</td><td>¥1200万</td></tr>
+                <tr><td>增值服务</td><td>¥100万</td><td>¥250万</td><td>¥700万</td></tr>
+                <tr><td>广告收入</td><td>¥50万</td><td>¥100万</td><td>¥300万</td></tr>
+                <tr style="font-weight: 700; background: var(--bg-alt);"><td>合计</td><td>¥550万</td><td>¥1500万</td><td>¥4000万</td></tr>
+            </table>
+        </div>
+
+        <h3>关键假设</h3>
+        <div class="table-container">
+            <table>
+                <tr><th>指标</th><th>Year 1</th><th>Year 2</th><th>Year 3</th></tr>
+                <tr><td>注册用户</td><td>5万</td><td>20万</td><td>60万</td></tr>
+                <tr><td>付费用户</td><td>2000</td><td>10000</td><td>35000</td></tr>
+                <tr><td>付费转化率</td><td>4%</td><td>5%</td><td>6%</td></tr>
+                <tr><td>众筹项目数</td><td>100</td><td>400</td><td>1200</td></tr>
+                <tr><td>平均众筹金额</td><td>¥50万</td><td>¥50万</td><td>¥50万</td></tr>
+                <tr><td>众筹成功率</td><td>50%</td><td>55%</td><td>60%</td></tr>
+            </table>
+        </div>
+
+        <h3>成本结构（Year 1）</h3>
+        <div class="table-container">
+            <table>
+                <tr><th>成本项</th><th>金额</th><th>占比</th></tr>
+                <tr><td>👨‍💻 人力成本</td><td>¥300万</td><td>50%</td></tr>
+                <tr><td>📢 市场推广</td><td>¥150万</td><td>25%</td></tr>
+                <tr><td>🖥️ 技术运维</td><td>¥80万</td><td>13%</td></tr>
+                <tr><td>🏢 行政办公</td><td>¥50万</td><td>8%</td></tr>
+                <tr><td>📋 其他</td><td>¥20万</td><td>4%</td></tr>
+                <tr style="font-weight: 700; background: var(--bg-alt);"><td>合计</td><td>¥600万</td><td>100%</td></tr>
+            </table>
+        </div>
+
+        <h3>盈亏平衡</h3>
+        <p>预计在 <strong>Year 2 中期</strong> 实现盈亏平衡，Year 2 年底实现盈利。</p>
+    </section>
+
+    <!-- 09 团队介绍 -->
+    <section class="page" id="team">
+        <div class="page-header">
+            <div class="page-num">SECTION 09</div>
+            <h2 class="page-title">团队介绍</h2>
+        </div>
+
+        <h3>核心团队</h3>
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="team-avatar">👨‍💼</div>
+                <div class="team-name">张创始</div>
+                <div class="team-role">CEO / 创始人</div>
+                <div class="team-bio">连续创业者，曾创办2家公司并成功退出，10年互联网经验</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">👨‍💻</div>
+                <div class="team-name">李技术</div>
+                <div class="team-role">CTO / 联合创始人</div>
+                <div class="team-bio">前阿里P8，全栈工程师，精通AI/大数据</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">👩‍💼</div>
+                <div class="team-name">王运营</div>
+                <div class="team-role">COO</div>
+                <div class="team-bio">前字节运营总监，擅长用户增长和社区运营</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">👨‍💼</div>
+                <div class="team-name">赵产品</div>
+                <div class="team-role">CPO</div>
+                <div class="team-bio">前腾讯产品经理，主导过多款千万级产品</div>
+            </div>
+        </div>
+
+        <h3>顾问团队</h3>
+        <div class="table-container">
+            <table>
+                <tr><th>姓名</th><th>背景</th><th>贡献</th></tr>
+                <tr><td>陈投资</td><td>知名天使投资人，投资100+项目</td><td>投融资顾问</td></tr>
+                <tr><td>刘法务</td><td>股权律师，服务500+创业公司</td><td>法律顾问</td></tr>
+                <tr><td>周财务</td><td>四大会计师事务所合伙人</td><td>财务顾问</td></tr>
+            </table>
+        </div>
+
+        <h3>团队扩张计划</h3>
+        <p><strong>Year 1：</strong>核心团队15人（技术8人 + 运营4人 + 商务2人 + 行政1人）</p>
+        <p><strong>Year 2：</strong>扩张至40人，增加市场、客服、法务团队</p>
+        <p><strong>Year 3：</strong>扩张至100人，设立区域分公司</p>
+    </section>
+
+    <!-- 10 发展规划 -->
+    <section class="page" id="milestone">
+        <div class="page-header">
+            <div class="page-num">SECTION 10</div>
+            <h2 class="page-title">发展规划</h2>
+        </div>
+
+        <h3>里程碑计划</h3>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-marker">Q1</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">产品开发 & 内测</div>
+                    <div class="timeline-desc">完成MVP开发，邀请100名种子用户内测，收集反馈迭代产品</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-marker" style="background: var(--secondary);">Q2</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">公测上线</div>
+                    <div class="timeline-desc">正式上线Web和小程序，与5家孵化器达成合作，累计用户5000+</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-marker" style="background: var(--warning);">Q3</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">功能完善 & 增长</div>
+                    <div class="timeline-desc">上线众筹功能、AI匹配、增值服务，完成首批众筹项目，用户突破2万</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-marker" style="background: var(--pink);">Q4</div>
+                <div class="timeline-content">
+                    <div class="timeline-title">规模化运营</div>
+                    <div class="timeline-desc">上线App，开启付费会员，完成50+众筹项目，打造3-5个成功案例</div>
+                </div>
+            </div>
+        </div>
+
+        <h3>三年规划</h3>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🌱</div>
+                <div class="feature-title">Year 1 · 验证</div>
+                <div class="feature-desc">产品上线，验证商业模式，积累种子用户和成功案例</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌿</div>
+                <div class="feature-title">Year 2 · 增长</div>
+                <div class="feature-desc">规模化获客，完善生态服务，实现盈亏平衡</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌳</div>
+                <div class="feature-title">Year 3 · 扩张</div>
+                <div class="feature-desc">行业领先，开拓新业务线，准备下一轮融资或上市</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 11 融资需求 -->
+    <section class="page" id="funding">
+        <div class="page-header">
+            <div class="page-num">SECTION 11</div>
+            <h2 class="page-title">融资需求</h2>
+        </div>
+
+        <h3>本轮融资</h3>
+        <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <div class="stat-card">
+                <div class="stat-value">¥500万</div>
+                <div class="stat-label">融资金额</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-value">10%</div>
+                <div class="stat-label">出让股权</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-value">¥5000万</div>
+                <div class="stat-label">投前估值</div>
+            </div>
+        </div>
+
+        <h3>资金用途</h3>
+        <div class="funding-use">
+            <div class="funding-item">
+                <div class="funding-percent" style="background: var(--primary);">40%</div>
+                <div class="funding-detail">
+                    <h4>产品研发</h4>
+                    <p>¥200万 · 技术团队扩张、服务器、AI能力建设</p>
+                </div>
+            </div>
+            <div class="funding-item">
+                <div class="funding-percent" style="background: var(--secondary);">30%</div>
+                <div class="funding-detail">
+                    <h4>市场推广</h4>
+                    <p>¥150万 · 用户获取、品牌建设、渠道合作</p>
+                </div>
+            </div>
+            <div class="funding-item">
+                <div class="funding-percent" style="background: var(--warning);">20%</div>
+                <div class="funding-detail">
+                    <h4>运营支出</h4>
+                    <p>¥100万 · 团队薪酬、办公场地、日常运营</p>
+                </div>
+            </div>
+            <div class="funding-item">
+                <div class="funding-percent" style="background: var(--pink);">10%</div>
+                <div class="funding-detail">
+                    <h4>风险储备</h4>
+                    <p>¥50万 · 不可预见支出、流动资金</p>
+                </div>
+            </div>
+        </div>
+
+        <h3>融资历史 & 规划</h3>
+        <div class="table-container">
+            <table>
+                <tr><th>轮次</th><th>时间</th><th>金额</th><th>估值</th><th>状态</th></tr>
+                <tr><td>天使轮</td><td>2024 Q4</td><td>¥100万</td><td>¥1000万</td><td>✅ 已完成</td></tr>
+                <tr style="background: rgba(99,102,241,0.1);"><td><strong>种子轮</strong></td><td><strong>2025 Q1</strong></td><td><strong>¥500万</strong></td><td><strong>¥5000万</strong></td><td><strong>🔄 进行中</strong></td></tr>
+                <tr><td>Pre-A轮</td><td>2025 Q4</td><td>¥2000万</td><td>¥2亿</td><td>📋 计划中</td></tr>
+                <tr><td>A轮</td><td>2026 Q3</td><td>¥5000万</td><td>¥5亿</td><td>📋 计划中</td></tr>
+            </table>
+        </div>
+
+        <h3>投资亮点</h3>
+        <p>✅ <strong>万亿市场：</strong>创业服务市场巨大，增长迅速</p>
+        <p>✅ <strong>差异化定位：</strong>一站式服务，竞争壁垒强</p>
+        <p>✅ <strong>经验团队：</strong>连续创业者+大厂背景，执行力强</p>
+        <p>✅ <strong>商业模式清晰：</strong>多元收入来源，盈利可期</p>
+        <p>✅ <strong>退出路径：</strong>IPO或被战略收购，回报可观</p>
+    </section>
+
+    <!-- 12 附录 -->
+    <section class="page" id="appendix">
+        <div class="page-header">
+            <div class="page-num">SECTION 12</div>
+            <h2 class="page-title">附录</h2>
+        </div>
+
+        <h3>联系方式</h3>
+        <div class="feature-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="feature-card">
+                <div class="feature-icon">📧</div>
+                <div class="feature-title">商务合作</div>
+                <div class="feature-desc">contact@ideahub.com</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📞</div>
+                <div class="feature-title">投资洽谈</div>
+                <div class="feature-desc">investor@ideahub.com</div>
+            </div>
+        </div>
+
+        <h3>附件清单</h3>
+        <p>📎 附件1：详细财务模型（Excel）</p>
+        <p>📎 附件2：产品原型演示（Figma）</p>
+        <p>📎 附件3：技术架构文档</p>
+        <p>📎 附件4：团队简历</p>
+        <p>📎 附件5：市场调研报告</p>
+
+        <h3>免责声明</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">本商业计划书仅供投资参考之用，所涉及的预测数据基于合理假设，实际经营结果可能与预测存在差异。投资有风险，决策需谨慎。</p>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-logo">💡 IdeaHub</div>
+        <p class="footer-text">让好想法遇见对的人</p>
+        <p class="footer-text" style="margin-top: 1rem;">© 2025 IdeaHub. All rights reserved. | 商业机密，请勿外传</p>
+    </footer>
+</body>
+</html>

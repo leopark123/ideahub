@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IdeaHub · 创意孵化平台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --pink: #ec4899;
+            --cyan: #06b6d4;
+            
+            --bg: #fafafa;
+            --bg-card: #ffffff;
+            --bg-dark: #111827;
+            --text: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --border: #e5e7eb;
+            --border-light: #f3f4f6;
+            
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--pink));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 1px;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .btn-ghost:hover {
+            background: var(--border-light);
+            color: var(--text);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-lg {
+            padding: 0.8rem 1.8rem;
+            font-size: 1rem;
+        }
+
+        /* Hero 区域 */
+        .hero {
+            padding: 140px 2rem 80px;
+            background: linear-gradient(180deg, #f8f7ff 0%, var(--bg) 100%);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* 分类标签 */
+        .categories {
+            padding: 2rem;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 70px;
+            z-index: 100;
+        }
+
+        .categories-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .category-chip {
+            padding: 0.6rem 1.2rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .category-chip.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .category-chip .count {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            font-size: 0.75rem;
+            margin-left: 0.3rem;
+        }
+
+        .category-chip:not(.active) .count {
+            background: var(--border-light);
+        }
+
+        /* 主内容区 */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 2rem;
+        }
+
+        /* 项目卡片 */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--primary-light);
+        }
+
+        .project-cover {
+            height: 180px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .project-cover-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .project-stage {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .stage-idea {
+            background: rgba(99,102,241,0.9);
+            color: white;
+        }
+
+        .stage-funding {
+            background: rgba(245,158,11,0.9);
+            color: white;
+        }
+
+        .stage-building {
+            background: rgba(16,185,129,0.9);
+            color: white;
+        }
+
+        .stage-launched {
+            background: rgba(236,72,153,0.9);
+            color: white;
+        }
+
+        .project-hot {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 0.3rem 0.6rem;
+            background: rgba(239,68,68,0.9);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .project-body {
+            padding: 1.5rem;
+        }
+
+        .project-category {
+            font-size: 0.75rem;
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .project-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .project-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .project-tag {
+            padding: 0.25rem 0.6rem;
+            background: var(--border-light);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .project-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .project-author {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .author-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--pink));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .author-name {
+            font-size: 0.85rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .project-stats {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .project-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* 众筹进度 */
+        .funding-progress {
+            margin: 1rem 0;
+        }
+
+        .funding-bar {
+            height: 8px;
+            background: var(--border-light);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .funding-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--pink));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .funding-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+        }
+
+        .funding-raised {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .funding-goal {
+            color: var(--text-muted);
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+        }
+
+        .sidebar-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* 发布项目入口 */
+        .publish-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--pink) 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .publish-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .publish-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+
+        .publish-card .btn {
+            background: white;
+            color: var(--primary);
+            width: 100%;
+            justify-content: center;
+        }
+
+        .publish-card .btn:hover {
+            background: var(--bg);
+        }
+
+        /* 寻找合伙人 */
+        .partner-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .partner-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .partner-item:hover {
+            background: var(--border-light);
+        }
+
+        .partner-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--cyan), var(--primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .partner-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .partner-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text);
+            margin-bottom: 0.2rem;
+        }
+
+        .partner-role {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .partner-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            margin-top: 0.5rem;
+        }
+
+        .partner-skill {
+            padding: 0.15rem 0.5rem;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        /* 热门话题 */
+        .topics-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .topic-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .topic-item:hover {
+            color: var(--primary);
+        }
+
+        .topic-rank {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .topic-rank.top {
+            background: linear-gradient(135deg, var(--secondary), var(--danger));
+            color: white;
+        }
+
+        .topic-rank:not(.top) {
+            background: var(--border-light);
+            color: var(--text-muted);
+        }
+
+        .topic-text {
+            font-size: 0.9rem;
+            flex: 1;
+        }
+
+        .topic-heat {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* 弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--radius-xl);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--bg);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        .tag-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            min-height: 48px;
+        }
+
+        .tag-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.6rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .tag-remove:hover {
+            opacity: 1;
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        /* 项目详情页 */
+        .project-detail {
+            display: none;
+        }
+
+        .project-detail.active {
+            display: block;
+        }
+
+        .detail-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 100px 2rem 3rem;
+            color: white;
+        }
+
+        .detail-header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .detail-breadcrumb {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+
+        .detail-breadcrumb a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .detail-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .detail-meta {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-author {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .detail-author-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .detail-author-name {
+            font-weight: 600;
+        }
+
+        .detail-author-title {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .detail-stats {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .detail-stat {
+            text-align: center;
+        }
+
+        .detail-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .detail-stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .detail-body {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 2rem;
+        }
+
+        .detail-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .detail-section {
+            margin-bottom: 2rem;
+        }
+
+        .detail-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .detail-section p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .team-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .team-member {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: var(--radius);
+        }
+
+        .team-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--pink));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .team-info h4 {
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .team-info p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .hiring-badge {
+            padding: 0.25rem 0.6rem;
+            background: var(--success);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .detail-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .funding-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .funding-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .funding-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .funding-target {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .funding-card .funding-bar {
+            height: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .funding-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .funding-detail-item {
+            text-align: center;
+        }
+
+        .funding-detail-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .funding-detail-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .invest-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            justify-content: center;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-dark);
+            color: white;
+            padding: 4rem 2rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .footer-links h4 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+            .detail-body {
+                grid-template-columns: 1fr;
+            }
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .nav-links {
+                display: none;
+            }
+            .hero-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">💡</div>
+                IdeaHub
+            </a>
+            <div class="nav-links">
+                <a href="#" class="nav-link active">发现项目</a>
+                <a href="#" class="nav-link">找合伙人</a>
+                <a href="#" class="nav-link">众筹大厅</a>
+                <a href="#" class="nav-link">成功案例</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-ghost">登录</button>
+                <button class="btn btn-primary" onclick="openModal('publish')">发布项目</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                已有 2,847 个项目成功孵化
+            </div>
+            <h1>让好想法遇见对的人</h1>
+            <p>发布你的创意项目，找到志同道合的合伙人，获得资金支持，一起把想法变成现实</p>
+            <div class="hero-actions">
+                <button class="btn btn-primary btn-lg" onclick="openModal('publish')">
+                    ✨ 发布我的项目
+                </button>
+                <button class="btn btn-secondary btn-lg">
+                    🔍 浏览项目
+                </button>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-value">12,580+</div>
+                    <div class="stat-label">创业者</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">¥8.6亿</div>
+                    <div class="stat-label">众筹金额</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">3,200+</div>
+                    <div class="stat-label">成功匹配</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 分类 -->
+    <section class="categories">
+        <div class="categories-container">
+            <div class="category-chip active">全部 <span class="count">1.2k</span></div>
+            <div class="category-chip">🤖 人工智能 <span class="count">286</span></div>
+            <div class="category-chip">📱 移动应用 <span class="count">195</span></div>
+            <div class="category-chip">🎮 游戏娱乐 <span class="count">142</span></div>
+            <div class="category-chip">🏥 医疗健康 <span class="count">98</span></div>
+            <div class="category-chip">📚 教育培训 <span class="count">127</span></div>
+            <div class="category-chip">🛒 电商零售 <span class="count">89</span></div>
+            <div class="category-chip">💰 金融科技 <span class="count">76</span></div>
+            <div class="category-chip">🏠 智能硬件 <span class="count">134</span></div>
+            <div class="category-chip">🌱 可持续发展 <span class="count">65</span></div>
+        </div>
+    </section>
+
+    <!-- 主内容 -->
+    <main class="main-content">
+        <div class="projects-section">
+            <div class="projects-grid">
+                <!-- 项目卡片 1 -->
+                <div class="project-card" onclick="openModal('detail')">
+                    <div class="project-cover">
+                        <div class="project-cover-placeholder">🤖</div>
+                        <span class="project-stage stage-funding">众筹中</span>
+                        <span class="project-hot">🔥 热门</span>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-category">人工智能</div>
+                        <h3 class="project-title">AURA - 情感陪伴机器人</h3>
+                        <p class="project-desc">基于大语言模型的桌面级情感陪伴机器人，具备语音对话、表情互动、情绪感知能力</p>
+                        <div class="project-tags">
+                            <span class="project-tag">机器人</span>
+                            <span class="project-tag">LLM</span>
+                            <span class="project-tag">硬件</span>
+                        </div>
+                        <div class="funding-progress">
+                            <div class="funding-bar">
+                                <div class="funding-fill" style="width: 78%"></div>
+                            </div>
+                            <div class="funding-info">
+                                <span class="funding-raised">¥780,000 已筹</span>
+                                <span class="funding-goal">目标 ¥1,000,000</span>
+                            </div>
+                        </div>
+                        <div class="project-meta">
+                            <div class="project-author">
+                                <div class="author-avatar">张</div>
+                                <span class="author-name">张明远</span>
+                            </div>
+                            <div class="project-stats">
+                                <span class="project-stat">❤️ 328</span>
+                                <span class="project-stat">💬 56</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 项目卡片 2 -->
+                <div class="project-card">
+                    <div class="project-cover" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        <div class="project-cover-placeholder">🎓</div>
+                        <span class="project-stage stage-idea">招募合伙人</span>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-category">教育培训</div>
+                        <h3 class="project-title">AI 私教 - 个性化学习助手</h3>
+                        <p class="project-desc">利用 AI 技术为 K12 学生提供个性化学习路径规划和智能答疑服务</p>
+                        <div class="project-tags">
+                            <span class="project-tag">教育</span>
+                            <span class="project-tag">AI</span>
+                            <span class="project-tag">SaaS</span>
+                        </div>
+                        <div class="project-meta">
+                            <div class="project-author">
+                                <div class="author-avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">李</div>
+                                <span class="author-name">李思琪</span>
+                            </div>
+                            <div class="project-stats">
+                                <span class="project-stat">❤️ 156</span>
+                                <span class="project-stat">💬 23</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 项目卡片 3 -->
+                <div class="project-card">
+                    <div class="project-cover" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <div class="project-cover-placeholder">🏥</div>
+                        <span class="project-stage stage-building">开发中</span>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-category">医疗健康</div>
+                        <h3 class="project-title">健康守护 - 智能健康监测手环</h3>
+                        <p class="project-desc">7×24小时连续监测心率、血氧、睡眠，AI 预警潜在健康风险</p>
+                        <div class="project-tags">
+                            <span class="project-tag">可穿戴</span>
+                            <span class="project-tag">健康</span>
+                            <span class="project-tag">硬件</span>
+                        </div>
+                        <div class="funding-progress">
+                            <div class="funding-bar">
+                                <div class="funding-fill" style="width: 120%"></div>
+                            </div>
+                            <div class="funding-info">
+                                <span class="funding-raised">¥1,200,000 已筹</span>
+                                <span class="funding-goal">目标 ¥800,000 ✓</span>
+                            </div>
+                        </div>
+                        <div class="project-meta">
+                            <div class="project-author">
+                                <div class="author-avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">王</div>
+                                <span class="author-name">王健康</span>
+                            </div>
+                            <div class="project-stats">
+                                <span class="project-stat">❤️ 892</span>
+                                <span class="project-stat">💬 134</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 项目卡片 4 -->
+                <div class="project-card">
+                    <div class="project-cover" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                        <div class="project-cover-placeholder">🎮</div>
+                        <span class="project-stage stage-idea">创意阶段</span>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-category">游戏娱乐</div>
+                        <h3 class="project-title">元宇宙社交 - 虚拟世界社交平台</h3>
+                        <p class="project-desc">打造下一代 3D 虚拟社交空间，支持 VR/AR 设备，创建你的数字分身</p>
+                        <div class="project-tags">
+                            <span class="project-tag">元宇宙</span>
+                            <span class="project-tag">VR</span>
+                            <span class="project-tag">社交</span>
+                        </div>
+                        <div class="project-meta">
+                            <div class="project-author">
+                                <div class="author-avatar" style="background: linear-gradient(135deg, #fa709a, #fee140);">陈</div>
+                                <span class="author-name">陈宇航</span>
+                            </div>
+                            <div class="project-stats">
+                                <span class="project-stat">❤️ 234</span>
+                                <span class="project-stat">💬 45</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 项目卡片 5 -->
+                <div class="project-card">
+                    <div class="project-cover" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                        <div class="project-cover-placeholder">🌱</div>
+                        <span class="project-stage stage-funding">众筹中</span>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-category">可持续发展</div>
+                        <h3 class="project-title">碳足迹追踪器 - 个人碳中和助手</h3>
+                        <p class="project-desc">记录日常碳排放，提供减碳建议，参与碳积分交易，共建绿色未来</p>
+                        <div class="project-tags">
+                            <span class="project-tag">环保</span>
+                            <span class="project-tag">碳中和</span>
+                            <span class="project-tag">App</span>
+                        </div>
+                        <div class="funding-progress">
+                            <div class="funding-bar">
+                                <div class="funding-fill" style="width: 45%"></div>
+                            </div>
+                            <div class="funding-info">
+                                <span class="funding-raised">¥225,000 已筹</span>
+                                <span class="funding-goal">目标 ¥500,000</span>
+                            </div>
+                        </div>
+                        <div class="project-meta">
+                            <div class="project-author">
+                                <div class="author-avatar" style="background: linear-gradient(135deg, #a8edea, #fed6e3); color: #333;">林</div>
+                                <span class="author-name">林小青</span>
+                            </div>
+                            <div class="project-stats">
+                                <span class="project-stat">❤️ 167</span>
+                                <span class="project-stat">💬 28</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 项目卡片 6 -->
+                <div class="project-card">
+                    <div class="project-cover" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="project-cover-placeholder">💰</div>
+                        <span class="project-stage stage-launched">已上线</span>
+                        <span class="project-hot">🔥 热门</span>
+                    </div>
+                    <div class="project-body">
+                        <div class="project-category">金融科技</div>
+                        <h3 class="project-title">智能记账 - AI 财务管家</h3>
+                        <p class="project-desc">自动识别消费记录，智能分类，生成财务报告，帮你管好每一分钱</p>
+                        <div class="project-tags">
+                            <span class="project-tag">FinTech</span>
+                            <span class="project-tag">AI</span>
+                            <span class="project-tag">App</span>
+                        </div>
+                        <div class="project-meta">
+                            <div class="project-author">
+                                <div class="author-avatar">赵</div>
+                                <span class="author-name">赵财神</span>
+                            </div>
+                            <div class="project-stats">
+                                <span class="project-stat">❤️ 1.2k</span>
+                                <span class="project-stat">💬 203</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <!-- 发布入口 -->
+            <div class="sidebar-card publish-card">
+                <h3>有好想法？</h3>
+                <p>发布你的创意项目，找到合适的合伙人和投资</p>
+                <button class="btn" onclick="openModal('publish')">🚀 立即发布</button>
+            </div>
+
+            <!-- 寻找合伙人 -->
+            <div class="sidebar-card">
+                <h3 class="sidebar-title">🤝 正在找合伙人</h3>
+                <div class="partner-list">
+                    <div class="partner-item">
+                        <div class="partner-avatar">张</div>
+                        <div class="partner-info">
+                            <div class="partner-name">张明远</div>
+                            <div class="partner-role">寻找技术合伙人</div>
+                            <div class="partner-skills">
+                                <span class="partner-skill">全栈开发</span>
+                                <span class="partner-skill">AI/ML</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="partner-item">
+                        <div class="partner-avatar" style="background: linear-gradient(135deg, #f093fb, #f5576c);">李</div>
+                        <div class="partner-info">
+                            <div class="partner-name">李思琪</div>
+                            <div class="partner-role">寻找运营合伙人</div>
+                            <div class="partner-skills">
+                                <span class="partner-skill">用户增长</span>
+                                <span class="partner-skill">社群运营</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="partner-item">
+                        <div class="partner-avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">王</div>
+                        <div class="partner-info">
+                            <div class="partner-name">王大锤</div>
+                            <div class="partner-role">寻找产品合伙人</div>
+                            <div class="partner-skills">
+                                <span class="partner-skill">产品设计</span>
+                                <span class="partner-skill">UI/UX</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 1rem; justify-content: center;">查看更多</button>
+            </div>
+
+            <!-- 热门话题 -->
+            <div class="sidebar-card">
+                <h3 class="sidebar-title">🔥 热门话题</h3>
+                <div class="topics-list">
+                    <div class="topic-item">
+                        <span class="topic-rank top">1</span>
+                        <span class="topic-text">AI Agent 创业机会</span>
+                        <span class="topic-heat">2.3k</span>
+                    </div>
+                    <div class="topic-item">
+                        <span class="topic-rank top">2</span>
+                        <span class="topic-text">出海东南亚市场</span>
+                        <span class="topic-heat">1.8k</span>
+                    </div>
+                    <div class="topic-item">
+                        <span class="topic-rank top">3</span>
+                        <span class="topic-text">硬件创业的坑</span>
+                        <span class="topic-heat">1.5k</span>
+                    </div>
+                    <div class="topic-item">
+                        <span class="topic-rank">4</span>
+                        <span class="topic-text">技术合伙人如何分股权</span>
+                        <span class="topic-heat">986</span>
+                    </div>
+                    <div class="topic-item">
+                        <span class="topic-rank">5</span>
+                        <span class="topic-text">种子轮融资技巧</span>
+                        <span class="topic-heat">754</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- 发布项目弹窗 -->
+    <div class="modal-overlay" id="publishModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">发布新项目</h2>
+                <button class="modal-close" onclick="closeModal('publish')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">项目名称 *</label>
+                    <input type="text" class="form-input" placeholder="给你的项目起个响亮的名字">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">一句话介绍 *</label>
+                    <input type="text" class="form-input" placeholder="用一句话描述你的项目（50字以内）">
+                    <div class="form-hint">简洁有力，让人一眼记住</div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">项目类别 *</label>
+                        <select class="form-input form-select">
+                            <option value="">选择类别</option>
+                            <option value="ai">🤖 人工智能</option>
+                            <option value="app">📱 移动应用</option>
+                            <option value="game">🎮 游戏娱乐</option>
+                            <option value="health">🏥 医疗健康</option>
+                            <option value="edu">📚 教育培训</option>
+                            <option value="ecom">🛒 电商零售</option>
+                            <option value="fin">💰 金融科技</option>
+                            <option value="hardware">🏠 智能硬件</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">项目阶段 *</label>
+                        <select class="form-input form-select">
+                            <option value="">选择阶段</option>
+                            <option value="idea">💡 创意阶段</option>
+                            <option value="mvp">🔧 开发中</option>
+                            <option value="funding">💰 寻求融资</option>
+                            <option value="launched">🚀 已上线</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">项目详情 *</label>
+                    <textarea class="form-input form-textarea" placeholder="详细描述你的项目：解决什么问题？目标用户是谁？有什么独特优势？"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">需要什么帮助？</label>
+                    <div class="tag-input" id="helpTags">
+                        <span class="tag-item">技术合伙人 <span class="tag-remove">×</span></span>
+                        <span class="tag-item">种子资金 <span class="tag-remove">×</span></span>
+                    </div>
+                    <div class="form-hint">点击添加：技术合伙人、运营合伙人、设计师、投资、资源对接...</div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">融资目标（可选）</label>
+                        <input type="text" class="form-input" placeholder="¥ 金额">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">出让股份（可选）</label>
+                        <input type="text" class="form-input" placeholder="例：10%">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('publish')">取消</button>
+                <button class="btn btn-primary">发布项目</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 项目详情弹窗 -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal" style="max-width: 900px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 24px 24px 0 0;">
+                <div>
+                    <div style="font-size: 0.8rem; opacity: 0.8; margin-bottom: 0.5rem;">人工智能 · 众筹中</div>
+                    <h2 class="modal-title">AURA - 情感陪伴机器人</h2>
+                </div>
+                <button class="modal-close" onclick="closeModal('detail')" style="background: rgba(255,255,255,0.2); color: white;">✕</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: grid; grid-template-columns: 1fr 280px; gap: 2rem;">
+                    <div>
+                        <div class="detail-section">
+                            <h3>📖 项目介绍</h3>
+                            <p>AURA 是一款基于大语言模型的桌面级情感陪伴机器人。它具备自然语音对话、丰富表情互动、情绪感知等能力，能够成为你生活中的智能伙伴。</p>
+                            <p style="margin-top: 1rem;">我们的愿景是让 AI 不再是冷冰冰的工具，而是有温度的陪伴。无论是独居的年轻人，还是需要陪伴的老人和儿童，AURA 都能提供贴心的情感支持。</p>
+                        </div>
+                        <div class="detail-section">
+                            <h3>✨ 核心功能</h3>
+                            <ul style="color: var(--text-secondary); padding-left: 1.5rem;">
+                                <li>本地运行 70B 大语言模型，自然流畅对话</li>
+                                <li>7 英寸表情屏，500+ 动态表情</li>
+                                <li>视觉感知，识别用户情绪状态</li>
+                                <li>8 麦克风阵列，10 米远场语音交互</li>
+                                <li>12 小时续航，无线充电</li>
+                            </ul>
+                        </div>
+                        <div class="detail-section">
+                            <h3>👥 团队成员</h3>
+                            <div class="team-list">
+                                <div class="team-member">
+                                    <div class="team-avatar">张</div>
+                                    <div class="team-info">
+                                        <h4>张明远 · 创始人</h4>
+                                        <p>前大厂 AI 算法工程师，10年经验</p>
+                                    </div>
+                                </div>
+                                <div class="team-member">
+                                    <div class="team-avatar" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">刘</div>
+                                    <div class="team-info">
+                                        <h4>刘工 · 硬件负责人</h4>
+                                        <p>资深嵌入式工程师</p>
+                                    </div>
+                                    <span class="hiring-badge">招募中</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="funding-card">
+                            <h4>💰 众筹进度</h4>
+                            <div class="funding-amount">¥780,000</div>
+                            <div class="funding-target">目标 ¥1,000,000</div>
+                            <div class="funding-bar" style="height: 12px;">
+                                <div class="funding-fill" style="width: 78%"></div>
+                            </div>
+                            <div class="funding-details">
+                                <div class="funding-detail-item">
+                                    <div class="funding-detail-value">328</div>
+                                    <div class="funding-detail-label">支持人数</div>
+                                </div>
+                                <div class="funding-detail-item">
+                                    <div class="funding-detail-value">23天</div>
+                                    <div class="funding-detail-label">剩余时间</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary invest-btn">💝 支持这个项目</button>
+                            <button class="btn btn-secondary" style="width: 100%; margin-top: 0.8rem; justify-content: center;">🤝 申请成为合伙人</button>
+                        </div>
+                        <div style="margin-top: 1rem; padding: 1rem; background: var(--bg); border-radius: var(--radius); font-size: 0.85rem; color: var(--text-secondary);">
+                            <strong style="color: var(--text);">🔍 正在寻找：</strong><br>
+                            • 全栈工程师（股权合伙）<br>
+                            • 产品运营（全职）<br>
+                            • 天使投资人
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>💡 IdeaHub</h3>
+                <p>IdeaHub 是一个连接创意、人才和资本的平台。我们相信每一个好想法都值得被看见，每一个创业者都值得被支持。</p>
+            </div>
+            <div class="footer-links">
+                <h4>平台</h4>
+                <ul>
+                    <li><a href="#">发现项目</a></li>
+                    <li><a href="#">找合伙人</a></li>
+                    <li><a href="#">众筹大厅</a></li>
+                    <li><a href="#">成功案例</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>资源</h4>
+                <ul>
+                    <li><a href="#">创业指南</a></li>
+                    <li><a href="#">融资课程</a></li>
+                    <li><a href="#">法律模板</a></li>
+                    <li><a href="#">BP 模板</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>关于</h4>
+                <ul>
+                    <li><a href="#">关于我们</a></li>
+                    <li><a href="#">联系我们</a></li>
+                    <li><a href="#">用户协议</a></li>
+                    <li><a href="#">隐私政策</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2025 IdeaHub. All rights reserved.</span>
+            <span>让好想法遇见对的人</span>
+        </div>
+    </footer>
+
+    <script>
+        // 弹窗控制
+        function openModal(type) {
+            if (type === 'publish') {
+                document.getElementById('publishModal').classList.add('active');
+            } else if (type === 'detail') {
+                document.getElementById('detailModal').classList.add('active');
+            }
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(type) {
+            if (type === 'publish') {
+                document.getElementById('publishModal').classList.remove('active');
+            } else if (type === 'detail') {
+                document.getElementById('detailModal').classList.remove('active');
+            }
+            document.body.style.overflow = '';
+        }
+
+        // 点击遮罩关闭
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+
+        // 分类切换
+        document.querySelectorAll('.category-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+            });
+        });
+
+        // 导航链接切换
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+
+        // 滚动时导航栏阴影
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 10) {
+                navbar.style.boxShadow = '0 4px 6px -1px rgba(0,0,0,0.1)';
+            } else {
+                navbar.style.boxShadow = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
