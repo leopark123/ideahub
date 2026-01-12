@@ -1,6 +1,7 @@
 """
 用户模型
 """
+
 import uuid
 from sqlalchemy import Column, String, Boolean, Text, Enum as SQLEnum
 from sqlalchemy.dialects.postgresql import UUID
@@ -43,5 +44,15 @@ class User(Base, TimestampMixin):
     projects = relationship("Project", back_populates="owner", lazy="dynamic")
     investments = relationship("Investment", back_populates="investor", lazy="dynamic")
     partnerships = relationship("Partnership", back_populates="user", lazy="dynamic")
-    sent_messages = relationship("Message", foreign_keys="Message.sender_id", back_populates="sender", lazy="dynamic")
-    received_messages = relationship("Message", foreign_keys="Message.receiver_id", back_populates="receiver", lazy="dynamic")
+    sent_messages = relationship(
+        "Message",
+        foreign_keys="Message.sender_id",
+        back_populates="sender",
+        lazy="dynamic",
+    )
+    received_messages = relationship(
+        "Message",
+        foreign_keys="Message.receiver_id",
+        back_populates="receiver",
+        lazy="dynamic",
+    )

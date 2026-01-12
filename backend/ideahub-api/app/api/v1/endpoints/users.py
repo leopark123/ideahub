@@ -1,6 +1,7 @@
 """
 用户相关 API
 """
+
 import json
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -21,18 +22,12 @@ async def health_check():
 
 
 @router.get("/{user_id}", response_model=UserResponse)
-async def get_user(
-    user_id: UUID,
-    db: AsyncSession = Depends(get_db)
-):
+async def get_user(user_id: UUID, db: AsyncSession = Depends(get_db)):
     """获取用户信息"""
     repo = UserRepository(db)
     user = await repo.get_by_id(user_id)
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="用户不存在"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="用户不存在")
     return user
 
 
@@ -40,7 +35,7 @@ async def get_user(
 async def update_current_user(
     data: UserUpdate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """更新当前用户信息"""
     update_data = data.model_dump(exclude_unset=True)
@@ -57,18 +52,14 @@ async def update_current_user(
 
 
 @router.get("/me/projects")
-async def get_my_projects(
-    current_user: User = Depends(get_current_user)
-):
+async def get_my_projects(current_user: User = Depends(get_current_user)):
     """获取我的项目列表"""
     projects = await current_user.projects.all()
     return {"items": projects, "total": len(projects)}
 
 
 @router.get("/me/investments")
-async def get_my_investments(
-    current_user: User = Depends(get_current_user)
-):
+async def get_my_investments(current_user: User = Depends(get_current_user)):
     """获取我的投资记录"""
     investments = await current_user.investments.all()
     return {"items": investments, "total": len(investments)}

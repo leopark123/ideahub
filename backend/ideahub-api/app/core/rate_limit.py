@@ -9,6 +9,7 @@
     async def login(...):
         ...
 """
+
 import time
 import hashlib
 from functools import wraps
@@ -28,10 +29,9 @@ def get_redis():
         try:
             import redis.asyncio as redis
             from app.core.config import settings
+
             _redis_client = redis.from_url(
-                settings.REDIS_URL,
-                encoding="utf-8",
-                decode_responses=True
+                settings.REDIS_URL, encoding="utf-8", decode_responses=True
             )
         except Exception:
             # Redis 不可用时，禁用速率限制
@@ -41,18 +41,17 @@ def get_redis():
 
 class RateLimitExceeded(HTTPException):
     """速率限制超出异常"""
+
     def __init__(self, retry_after: int = 60):
         super().__init__(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail=f"请求过于频繁，请 {retry_after} 秒后重试",
-            headers={"Retry-After": str(retry_after)}
+            headers={"Retry-After": str(retry_after)},
         )
 
 
 async def check_rate_limit(
-    key: str,
-    max_requests: int,
-    window_seconds: int
+    key: str, max_requests: int, window_seconds: int
 ) -> tuple[bool, int, int]:
     """
     检查速率限制（滑动窗口算法）
@@ -105,7 +104,7 @@ def get_client_ip(request: Request) -> str:
 def rate_limit(
     max_requests: int = 100,
     window_seconds: int = 60,
-    key_func: Optional[Callable[[Request], str]] = None
+    key_func: Optional[Callable[[Request], str]] = None,
 ):
     """
     速率限制装饰器
@@ -121,11 +120,12 @@ def rate_limit(
         async def login(request: Request, ...):
             ...
     """
+
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
             # 从 kwargs 中获取 request
-            request = kwargs.get('request')
+            request = kwargs.get("request")
             if request is None:
                 # 尝试从 args 中找 Request 对象
                 for arg in args:
@@ -154,7 +154,9 @@ def rate_limit(
                 raise RateLimitExceeded(retry_after=window_seconds)
 
             return await func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -168,15 +170,13 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     # 不同路径的限制配置
     RATE_LIMITS = {
         # 认证相关 - 更严格
-        "/api/v1/auth/login": (5, 60),      # 每分钟 5 次
-        "/api/v1/auth/register": (3, 60),   # 每分钟 3 次
-        "/api/v1/auth/refresh": (10, 60),   # 每分钟 10 次
-
+        "/api/v1/auth/login": (5, 60),  # 每分钟 5 次
+        "/api/v1/auth/register": (3, 60),  # 每分钟 3 次
+        "/api/v1/auth/refresh": (10, 60),  # 每分钟 10 次
         # 消息发送 - 防止刷屏
-        "/api/v1/messages": (30, 60),       # 每分钟 30 条
-
+        "/api/v1/messages": (30, 60),  # 每分钟 30 条
         # 投资 - 防止重复提交
-        "/api/v1/investments": (10, 60),    # 每分钟 10 次
+        "/api/v1/investments": (10, 60),  # 每分钟 10 次
     }
 
     # 默认限制: 每分钟 200 次
@@ -214,7 +214,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                     "X-RateLimit-Limit": str(max_requests),
                     "X-RateLimit-Remaining": "0",
                     "X-RateLimit-Reset": str(reset_time),
-                }
+                },
             )
 
         # 继续处理请求

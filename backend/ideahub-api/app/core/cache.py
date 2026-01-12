@@ -7,6 +7,7 @@ Redis 缓存层
 - JSON 序列化支持
 - 缓存失效策略
 """
+
 import json
 import hashlib
 import functools
@@ -27,10 +28,9 @@ def get_redis():
         try:
             import redis.asyncio as redis
             from app.core.config import settings
+
             _redis_client = redis.from_url(
-                settings.REDIS_URL,
-                encoding="utf-8",
-                decode_responses=True
+                settings.REDIS_URL, encoding="utf-8", decode_responses=True
             )
         except Exception as e:
             logger.warning(f"Redis 连接失败: {e}")
@@ -79,10 +79,11 @@ class CacheKey:
 
 class CacheTTL:
     """缓存过期时间（秒）"""
-    SHORT = 60          # 1 分钟
-    MEDIUM = 300        # 5 分钟
-    LONG = 3600         # 1 小时
-    VERY_LONG = 86400   # 1 天
+
+    SHORT = 60  # 1 分钟
+    MEDIUM = 300  # 5 分钟
+    LONG = 3600  # 1 小时
+    VERY_LONG = 86400  # 1 天
 
 
 class Cache:
@@ -105,11 +106,7 @@ class Cache:
             return None
 
     @staticmethod
-    async def set(
-        key: str,
-        value: Any,
-        ttl: int = CacheTTL.MEDIUM
-    ) -> bool:
+    async def set(key: str, value: Any, ttl: int = CacheTTL.MEDIUM) -> bool:
         """设置缓存"""
         redis = get_redis()
         if redis is None:
@@ -185,13 +182,13 @@ class Cache:
             return None
 
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 def cached(
     key_func: Callable[..., str],
     ttl: int = CacheTTL.MEDIUM,
-    skip_if: Callable[..., bool] = None
+    skip_if: Callable[..., bool] = None,
 ):
     """
     缓存装饰器
@@ -209,6 +206,7 @@ def cached(
         async def get_project(project_id: UUID) -> Project:
             ...
     """
+
     def decorator(func: Callable[..., T]) -> Callable[..., T]:
         @functools.wraps(func)
         async def wrapper(*args, **kwargs) -> T:
@@ -231,11 +229,14 @@ def cached(
             # 缓存结果（如果不是 None）
             if result is not None:
                 # 处理 Pydantic 模型
-                if hasattr(result, 'model_dump'):
+                if hasattr(result, "model_dump"):
                     cache_value = result.model_dump()
-                elif hasattr(result, '__dict__'):
-                    cache_value = {k: v for k, v in result.__dict__.items()
-                                   if not k.startswith('_')}
+                elif hasattr(result, "__dict__"):
+                    cache_value = {
+                        k: v
+                        for k, v in result.__dict__.items()
+                        if not k.startswith("_")
+                    }
                 else:
                     cache_value = result
 
@@ -243,7 +244,9 @@ def cached(
                 logger.debug(f"缓存写入: {cache_key}")
 
             return result
+
         return wrapper
+
     return decorator
 
 

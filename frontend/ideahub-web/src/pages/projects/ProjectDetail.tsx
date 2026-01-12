@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { projectsApi, type Project } from '@/api/projects';
 import { crowdfundingApi, type Crowdfunding } from '@/api/crowdfunding';
 import { messagesApi } from '@/api/messages';
@@ -30,7 +30,6 @@ const statusLabels: Record<string, { text: string; color: string }> = {
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
   const [project, setProject] = useState<Project | null>(null);
   const [crowdfunding, setCrowdfunding] = useState<Crowdfunding | null>(null);

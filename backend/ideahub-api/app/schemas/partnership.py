@@ -1,6 +1,7 @@
 """
 合伙人相关 Schema
 """
+
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from uuid import UUID

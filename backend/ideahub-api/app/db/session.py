@@ -8,6 +8,7 @@
 - pool_timeout: 获取连接的等待超时时间(秒)
 - pool_pre_ping: 使用前检测连接是否有效
 """
+
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.pool import NullPool
 from app.core.config import settings
@@ -25,27 +26,33 @@ def create_engine():
 
     # 生产环境使用连接池
     if settings.ENVIRONMENT == "production":
-        engine_kwargs.update({
-            "pool_size": 20,           # 保持 20 个连接
-            "max_overflow": 30,        # 高峰时最多 50 个连接
-            "pool_recycle": 1800,      # 30 分钟回收连接
-            "pool_timeout": 30,        # 等待连接超时 30 秒
-        })
+        engine_kwargs.update(
+            {
+                "pool_size": 20,  # 保持 20 个连接
+                "max_overflow": 30,  # 高峰时最多 50 个连接
+                "pool_recycle": 1800,  # 30 分钟回收连接
+                "pool_timeout": 30,  # 等待连接超时 30 秒
+            }
+        )
     elif settings.ENVIRONMENT == "staging":
-        engine_kwargs.update({
-            "pool_size": 10,
-            "max_overflow": 20,
-            "pool_recycle": 1800,
-            "pool_timeout": 30,
-        })
+        engine_kwargs.update(
+            {
+                "pool_size": 10,
+                "max_overflow": 20,
+                "pool_recycle": 1800,
+                "pool_timeout": 30,
+            }
+        )
     else:
         # 开发环境使用较小的连接池
-        engine_kwargs.update({
-            "pool_size": 5,
-            "max_overflow": 10,
-            "pool_recycle": 3600,      # 1 小时回收
-            "pool_timeout": 30,
-        })
+        engine_kwargs.update(
+            {
+                "pool_size": 5,
+                "max_overflow": 10,
+                "pool_recycle": 3600,  # 1 小时回收
+                "pool_timeout": 30,
+            }
+        )
 
     return create_async_engine(settings.DATABASE_URL, **engine_kwargs)
 
@@ -71,5 +78,5 @@ async def get_db_stats() -> dict:
         "checked_in": pool.checkedin(),
         "checked_out": pool.checkedout(),
         "overflow": pool.overflow(),
-        "invalid": pool.invalidatedcount() if hasattr(pool, 'invalidatedcount') else 0,
+        "invalid": pool.invalidatedcount() if hasattr(pool, "invalidatedcount") else 0,
     }

@@ -1,6 +1,7 @@
 """
 数据仓储
 """
+
 from app.repositories.user import UserRepository
 from app.repositories.project import ProjectRepository
 from app.repositories.crowdfunding import CrowdfundingRepository

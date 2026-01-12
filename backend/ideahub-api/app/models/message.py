@@ -1,8 +1,17 @@
 """
 消息模型
 """
+
 import uuid
-from sqlalchemy import Column, String, Text, Boolean, ForeignKey, Enum as SQLEnum, DateTime
+from sqlalchemy import (
+    Column,
+    String,
+    Text,
+    Boolean,
+    ForeignKey,
+    Enum as SQLEnum,
+    DateTime,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 import enum
@@ -11,10 +20,10 @@ from app.db.base import Base, TimestampMixin
 
 
 class MessageType(str, enum.Enum):
-    TEXT = "text"             # 文本消息
-    IMAGE = "image"           # 图片消息
-    FILE = "file"             # 文件消息
-    SYSTEM = "system"         # 系统消息
+    TEXT = "text"  # 文本消息
+    IMAGE = "image"  # 图片消息
+    FILE = "file"  # 文件消息
+    SYSTEM = "system"  # 系统消息
     NOTIFICATION = "notification"  # 通知消息
 
 
@@ -41,5 +50,9 @@ class Message(Base, TimestampMixin):
     project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id"), nullable=True)
 
     # 关系
-    sender = relationship("User", foreign_keys=[sender_id], back_populates="sent_messages")
-    receiver = relationship("User", foreign_keys=[receiver_id], back_populates="received_messages")
+    sender = relationship(
+        "User", foreign_keys=[sender_id], back_populates="sent_messages"
+    )
+    receiver = relationship(
+        "User", foreign_keys=[receiver_id], back_populates="received_messages"
+    )

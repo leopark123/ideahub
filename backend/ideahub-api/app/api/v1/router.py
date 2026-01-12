@@ -1,8 +1,17 @@
 """
 API 路由汇总
 """
+
 from fastapi import APIRouter
-from app.api.v1.endpoints import auth, users, projects, crowdfunding, messages, investments, partnerships
+from app.api.v1.endpoints import (
+    auth,
+    users,
+    projects,
+    crowdfunding,
+    messages,
+    investments,
+    partnerships,
+)
 
 api_router = APIRouter()
 

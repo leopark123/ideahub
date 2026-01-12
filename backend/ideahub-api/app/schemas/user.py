@@ -1,6 +1,7 @@
 """
 用户相关 Schema
 """
+
 from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, List
 from uuid import UUID

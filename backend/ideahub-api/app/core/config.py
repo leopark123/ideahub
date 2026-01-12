@@ -6,6 +6,7 @@
 - CORS 根据环境自动配置
 - 敏感配置从环境变量读取
 """
+
 import secrets
 import warnings
 from pydantic_settings import BaseSettings
@@ -76,13 +77,16 @@ class Settings(BaseSettings):
             return DEV_CORS_ORIGINS
         elif self.CORS_ORIGINS_STR:
             # 从环境变量解析
-            return [origin.strip() for origin in self.CORS_ORIGINS_STR.split(",") if origin.strip()]
+            return [
+                origin.strip()
+                for origin in self.CORS_ORIGINS_STR.split(",")
+                if origin.strip()
+            ]
         else:
             # 生产环境必须配置
             if self.ENVIRONMENT == "production":
                 warnings.warn(
-                    "生产环境未配置 CORS_ORIGINS_STR，将拒绝跨域请求",
-                    UserWarning
+                    "生产环境未配置 CORS_ORIGINS_STR，将拒绝跨域请求", UserWarning
                 )
             return []
 
@@ -108,10 +112,10 @@ class Settings(BaseSettings):
                 f"⚠️  警告: SECRET_KEY 未设置或使用了不安全的默认值!\n"
                 f"已自动生成临时密钥用于开发环境。\n"
                 f"生产环境必须设置环境变量 SECRET_KEY!\n"
-                f"建议使用: python -c \"import secrets; print(secrets.token_urlsafe(32))\"\n"
+                f'建议使用: python -c "import secrets; print(secrets.token_urlsafe(32))"\n'
                 f"{'='*60}\n",
                 UserWarning,
-                stacklevel=2
+                stacklevel=2,
             )
             return generated_key
 
@@ -120,7 +124,7 @@ class Settings(BaseSettings):
             warnings.warn(
                 f"SECRET_KEY 长度不足 (当前: {len(v)} 字符)，建议至少 32 字符",
                 UserWarning,
-                stacklevel=2
+                stacklevel=2,
             )
 
         return v
@@ -136,6 +140,5 @@ settings = Settings()
 if settings.ENVIRONMENT == "production":
     if len(settings.SECRET_KEY) < 32:
         raise ValueError(
-            "生产环境 SECRET_KEY 必须至少 32 字符！"
-            "请设置环境变量 SECRET_KEY"
+            "生产环境 SECRET_KEY 必须至少 32 字符！" "请设置环境变量 SECRET_KEY"
         )

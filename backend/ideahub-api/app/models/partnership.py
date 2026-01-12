@@ -1,6 +1,7 @@
 """
 合伙人模型
 """
+
 import uuid
 from sqlalchemy import Column, String, Text, ForeignKey, Enum as SQLEnum
 from sqlalchemy.dialects.postgresql import UUID
@@ -11,18 +12,18 @@ from app.db.base import Base, TimestampMixin
 
 
 class PartnershipStatus(str, enum.Enum):
-    PENDING = "pending"       # 申请中
-    APPROVED = "approved"     # 已批准
-    REJECTED = "rejected"     # 已拒绝
-    LEFT = "left"             # 已退出
+    PENDING = "pending"  # 申请中
+    APPROVED = "approved"  # 已批准
+    REJECTED = "rejected"  # 已拒绝
+    LEFT = "left"  # 已退出
 
 
 class PartnershipRole(str, enum.Enum):
-    FOUNDER = "founder"           # 创始人
-    CO_FOUNDER = "co_founder"     # 联合创始人
-    PARTNER = "partner"           # 合伙人
-    ADVISOR = "advisor"           # 顾问
-    MEMBER = "member"             # 团队成员
+    FOUNDER = "founder"  # 创始人
+    CO_FOUNDER = "co_founder"  # 联合创始人
+    PARTNER = "partner"  # 合伙人
+    ADVISOR = "advisor"  # 顾问
+    MEMBER = "member"  # 团队成员
 
 
 class Partnership(Base, TimestampMixin):

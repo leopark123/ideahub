@@ -6,6 +6,7 @@
 - 项目列表缓存
 - 自动缓存失效
 """
+
 import json
 from uuid import UUID
 from typing import Optional
@@ -34,7 +35,7 @@ class ProjectService:
             cover_image=data.cover_image,
             video_url=data.video_url,
             team_size=data.team_size,
-            status=ProjectStatus.DRAFT
+            status=ProjectStatus.DRAFT,
         )
 
         # 处理列表字段转 JSON
@@ -54,8 +55,7 @@ class ProjectService:
         project = await self.repo.get_by_id(project_id)
         if not project:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="项目不存在"
+                status_code=status.HTTP_404_NOT_FOUND, detail="项目不存在"
             )
         return project
 
@@ -66,7 +66,7 @@ class ProjectService:
         category: Optional[ProjectCategory] = None,
         project_status: Optional[ProjectStatus] = None,
         keyword: Optional[str] = None,
-        owner_id: Optional[UUID] = None
+        owner_id: Optional[UUID] = None,
     ) -> ProjectList:
         items, total = await self.repo.list_projects(
             page=page,
@@ -74,29 +74,20 @@ class ProjectService:
             category=category,
             status=project_status,
             keyword=keyword,
-            owner_id=owner_id
+            owner_id=owner_id,
         )
 
-        return ProjectList(
-            items=items,
-            total=total,
-            page=page,
-            page_size=page_size
-        )
+        return ProjectList(items=items, total=total, page=page, page_size=page_size)
 
     async def update_project(
-        self,
-        project_id: UUID,
-        data: ProjectUpdate,
-        current_user: User
+        self, project_id: UUID, data: ProjectUpdate, current_user: User
     ) -> Project:
         project = await self.get_project(project_id)
 
         # 检查权限
         if project.owner_id != current_user.id:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="没有权限修改此项目"
+                status_code=status.HTTP_403_FORBIDDEN, detail="没有权限修改此项目"
             )
 
         update_data = data.model_dump(exclude_unset=True)
@@ -104,7 +95,10 @@ class ProjectService:
         # 处理列表字段转 JSON
         if "images" in update_data and update_data["images"] is not None:
             update_data["images"] = json.dumps(update_data["images"])
-        if "required_skills" in update_data and update_data["required_skills"] is not None:
+        if (
+            "required_skills" in update_data
+            and update_data["required_skills"] is not None
+        ):
             update_data["required_skills"] = json.dumps(update_data["required_skills"])
 
         for field, value in update_data.items():
@@ -123,8 +117,7 @@ class ProjectService:
         # 检查权限
         if project.owner_id != current_user.id:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="没有权限删除此项目"
+                status_code=status.HTTP_403_FORBIDDEN, detail="没有权限删除此项目"
             )
 
         await self.repo.delete(project)
@@ -138,15 +131,14 @@ class ProjectService:
         # 检查权限
         if project.owner_id != current_user.id:
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="没有权限发布此项目"
+                status_code=status.HTTP_403_FORBIDDEN, detail="没有权限发布此项目"
             )
 
         # 检查状态
         if project.status not in [ProjectStatus.DRAFT, ProjectStatus.PENDING]:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="只有草稿或待审核状态的项目可以发布"
+                detail="只有草稿或待审核状态的项目可以发布",
             )
 
         project.status = ProjectStatus.ACTIVE

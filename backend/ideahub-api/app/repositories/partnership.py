@@ -1,6 +1,7 @@
 """
 合伙人仓储
 """
+
 from typing import Optional, List, Tuple
 from uuid import UUID
 from sqlalchemy import select, func, and_
@@ -17,10 +18,7 @@ class PartnershipRepository:
     async def get_by_id(self, partnership_id: UUID) -> Optional[Partnership]:
         result = await self.db.execute(
             select(Partnership)
-            .options(
-                selectinload(Partnership.user),
-                selectinload(Partnership.project)
-            )
+            .options(selectinload(Partnership.user), selectinload(Partnership.project))
             .where(Partnership.id == partnership_id)
         )
         return result.scalar_one_or_none()
@@ -30,14 +28,10 @@ class PartnershipRepository:
     ) -> Optional[Partnership]:
         result = await self.db.execute(
             select(Partnership)
-            .options(
-                selectinload(Partnership.user),
-                selectinload(Partnership.project)
-            )
+            .options(selectinload(Partnership.user), selectinload(Partnership.project))
             .where(
                 and_(
-                    Partnership.user_id == user_id,
-                    Partnership.project_id == project_id
+                    Partnership.user_id == user_id, Partnership.project_id == project_id
                 )
             )
         )
@@ -48,11 +42,13 @@ class PartnershipRepository:
         project_id: UUID,
         status: Optional[PartnershipStatus] = None,
         page: int = 1,
-        page_size: int = 20
+        page_size: int = 20,
     ) -> Tuple[List[Partnership], int]:
-        query = select(Partnership).options(
-            selectinload(Partnership.user)
-        ).where(Partnership.project_id == project_id)
+        query = (
+            select(Partnership)
+            .options(selectinload(Partnership.user))
+            .where(Partnership.project_id == project_id)
+        )
 
         if status:
             query = query.where(Partnership.status == status)
@@ -77,12 +73,13 @@ class PartnershipRepository:
         user_id: UUID,
         status: Optional[PartnershipStatus] = None,
         page: int = 1,
-        page_size: int = 20
+        page_size: int = 20,
     ) -> Tuple[List[Partnership], int]:
-        query = select(Partnership).options(
-            selectinload(Partnership.user),
-            selectinload(Partnership.project)
-        ).where(Partnership.user_id == user_id)
+        query = (
+            select(Partnership)
+            .options(selectinload(Partnership.user), selectinload(Partnership.project))
+            .where(Partnership.user_id == user_id)
+        )
 
         if status:
             query = query.where(Partnership.status == status)
@@ -113,11 +110,10 @@ class PartnershipRepository:
 
     async def get_pending_count(self, project_id: UUID) -> int:
         result = await self.db.execute(
-            select(func.count())
-            .where(
+            select(func.count()).where(
                 and_(
                     Partnership.project_id == project_id,
-                    Partnership.status == PartnershipStatus.PENDING
+                    Partnership.status == PartnershipStatus.PENDING,
                 )
             )
         )

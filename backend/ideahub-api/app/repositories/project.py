@@ -6,6 +6,7 @@
 - refresh 后按需加载关系，避免多余查询
 - 简单更新操作（如计数）不加载关系，提升性能
 """
+
 from typing import Optional, List, Tuple
 from uuid import UUID
 from sqlalchemy import select, func, or_
@@ -21,7 +22,7 @@ class ProjectRepository:
 
     async def _load_relationships(self, project: Project) -> Project:
         """按需加载项目关系（owner）"""
-        await self.db.refresh(project, ['owner'])
+        await self.db.refresh(project, ["owner"])
         return project
 
     async def get_by_id(self, project_id: UUID) -> Optional[Project]:
@@ -39,7 +40,7 @@ class ProjectRepository:
         category: Optional[ProjectCategory] = None,
         status: Optional[ProjectStatus] = None,
         keyword: Optional[str] = None,
-        owner_id: Optional[UUID] = None
+        owner_id: Optional[UUID] = None,
     ) -> Tuple[List[Project], int]:
         query = select(Project).options(selectinload(Project.owner))
 
@@ -54,7 +55,7 @@ class ProjectRepository:
             query = query.where(
                 or_(
                     Project.title.ilike(f"%{keyword}%"),
-                    Project.description.ilike(f"%{keyword}%")
+                    Project.description.ilike(f"%{keyword}%"),
                 )
             )
 

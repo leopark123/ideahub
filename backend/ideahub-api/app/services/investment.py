@@ -3,6 +3,7 @@
 
 包含事务管理，确保投资操作的原子性。
 """
+
 from uuid import UUID
 from decimal import Decimal
 from fastapi import HTTPException, status
@@ -24,36 +25,32 @@ class InvestmentService:
         self.crowdfunding_repo = CrowdfundingRepository(db)
 
     async def create_investment(
-        self,
-        data: InvestmentCreate,
-        current_user: User
+        self, data: InvestmentCreate, current_user: User
     ) -> Investment:
         # 获取众筹
         crowdfunding = await self.crowdfunding_repo.get_by_id(data.crowdfunding_id)
         if not crowdfunding:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="众筹活动不存在"
+                status_code=status.HTTP_404_NOT_FOUND, detail="众筹活动不存在"
             )
 
         # 检查众筹状态
         if crowdfunding.status != CrowdfundingStatus.ACTIVE:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="该众筹活动未开放投资"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="该众筹活动未开放投资"
             )
 
         # 检查投资金额
         if data.amount < crowdfunding.min_investment:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"最低投资金额为 {crowdfunding.min_investment} 元"
+                detail=f"最低投资金额为 {crowdfunding.min_investment} 元",
             )
 
         if crowdfunding.max_investment and data.amount > crowdfunding.max_investment:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"最高投资金额为 {crowdfunding.max_investment} 元"
+                detail=f"最高投资金额为 {crowdfunding.max_investment} 元",
             )
 
         # 创建投资记录
@@ -63,15 +60,13 @@ class InvestmentService:
             amount=data.amount,
             reward_tier_id=data.reward_tier_id,
             payment_method=data.payment_method,
-            status=InvestmentStatus.PENDING
+            status=InvestmentStatus.PENDING,
         )
 
         return await self.repo.create(investment)
 
     async def confirm_investment(
-        self,
-        investment_id: UUID,
-        transaction_id: str
+        self, investment_id: UUID, transaction_id: str
     ) -> Investment:
         """
         确认投资支付 - 使用事务确保原子性
@@ -86,21 +81,20 @@ class InvestmentService:
         investment = await self.repo.get_by_id(investment_id)
         if not investment:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="投资记录不存在"
+                status_code=status.HTTP_404_NOT_FOUND, detail="投资记录不存在"
             )
 
         if investment.status != InvestmentStatus.PENDING:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="该投资已处理"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="该投资已处理"
             )
 
-        crowdfunding = await self.crowdfunding_repo.get_by_id(investment.crowdfunding_id)
+        crowdfunding = await self.crowdfunding_repo.get_by_id(
+            investment.crowdfunding_id
+        )
         if not crowdfunding:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="众筹活动不存在"
+                status_code=status.HTTP_404_NOT_FOUND, detail="众筹活动不存在"
             )
 
         # 使用工作单元确保事务原子性
@@ -122,10 +116,7 @@ class InvestmentService:
         return await self.repo.get_by_id(investment_id)
 
     async def get_user_investments(
-        self,
-        user_id: UUID,
-        page: int = 1,
-        page_size: int = 10
+        self, user_id: UUID, page: int = 1, page_size: int = 10
     ):
         return await self.repo.get_by_user(user_id, page, page_size)
 
@@ -133,7 +124,6 @@ class InvestmentService:
         investment = await self.repo.get_by_id(investment_id)
         if not investment:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="投资记录不存在"
+                status_code=status.HTTP_404_NOT_FOUND, detail="投资记录不存在"
             )
         return investment

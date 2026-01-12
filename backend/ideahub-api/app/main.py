@@ -7,6 +7,7 @@ IdeaHub API 入口
 - 请求日志中间件
 - 数据库连接池监控
 """
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.router import api_router

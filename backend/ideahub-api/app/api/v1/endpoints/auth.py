@@ -1,6 +1,7 @@
 """
 认证相关 API
 """
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,11 +21,10 @@ async def health_check():
     return {"status": "ok", "module": "auth"}
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def register(
-    data: UserRegister,
-    db: AsyncSession = Depends(get_db)
-):
+@router.post(
+    "/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED
+)
+async def register(data: UserRegister, db: AsyncSession = Depends(get_db)):
     """用户注册"""
     service = AuthService(db)
     user = await service.register(data)
@@ -32,10 +32,7 @@ async def register(
 
 
 @router.post("/login", response_model=Token)
-async def login(
-    data: UserLogin,
-    db: AsyncSession = Depends(get_db)
-):
+async def login(data: UserLogin, db: AsyncSession = Depends(get_db)):
     """用户登录"""
     service = AuthService(db)
     return await service.login(data)
@@ -43,8 +40,7 @@ async def login(
 
 @router.post("/login/form", response_model=Token)
 async def login_form(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: AsyncSession = Depends(get_db)
+    form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
 ):
     """用户登录 (OAuth2 表单格式)"""
     service = AuthService(db)
@@ -53,16 +49,12 @@ async def login_form(
 
 
 @router.post("/refresh", response_model=Token)
-async def refresh_token(
-    refresh_token: str,
-    db: AsyncSession = Depends(get_db)
-):
+async def refresh_token(refresh_token: str, db: AsyncSession = Depends(get_db)):
     """刷新 Token"""
     payload = decode_token(refresh_token)
     if not payload or payload.get("type") != "refresh":
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="无效的刷新令牌"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="无效的刷新令牌"
         )
 
     user_id = payload.get("sub")
@@ -71,17 +63,13 @@ async def refresh_token(
 
 
 @router.get("/me", response_model=UserResponse)
-async def get_current_user_info(
-    current_user: User = Depends(get_current_user)
-):
+async def get_current_user_info(current_user: User = Depends(get_current_user)):
     """获取当前用户信息"""
     return current_user
 
 
 @router.post("/logout")
-async def logout(
-    current_user: User = Depends(get_current_user)
-):
+async def logout(current_user: User = Depends(get_current_user)):
     """用户登出"""
     # TODO: 可以在这里将 token 加入黑名单（使用 Redis）
     return {"message": "登出成功"}

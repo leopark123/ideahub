@@ -7,6 +7,7 @@
 - 敏感信息脱敏
 - 支持结构化日志
 """
+
 import time
 import logging
 import json
@@ -137,7 +138,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             # 记录异常
             logger.exception(
                 f"Request failed: {request.method} {path}",
-                extra={"request_info": request_info, "error": str(e)}
+                extra={"request_info": request_info, "error": str(e)},
             )
             raise
 
@@ -155,17 +156,17 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         if status_code >= 500:
             logger.error(
                 f"{request.method} {path} {status_code} ({duration_ms:.1f}ms)",
-                extra=log_data
+                extra=log_data,
             )
         elif status_code >= 400:
             logger.warning(
                 f"{request.method} {path} {status_code} ({duration_ms:.1f}ms)",
-                extra=log_data
+                extra=log_data,
             )
         else:
             logger.info(
                 f"{request.method} {path} {status_code} ({duration_ms:.1f}ms)",
-                extra=log_data
+                extra=log_data,
             )
 
         # 添加处理时间到响应头
@@ -182,8 +183,7 @@ def setup_logging():
     if settings.ENVIRONMENT == "development":
         # 开发环境：简单格式，便于阅读
         formatter = logging.Formatter(
-            "%(asctime)s | %(levelname)s | %(message)s",
-            datefmt="%H:%M:%S"
+            "%(asctime)s | %(levelname)s | %(message)s", datefmt="%H:%M:%S"
         )
     else:
         # 生产环境：JSON 格式，便于日志收集

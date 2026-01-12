@@ -1,6 +1,7 @@
 """
 众筹仓储
 """
+
 from typing import Optional, List, Tuple
 from uuid import UUID
 from sqlalchemy import select, func
@@ -54,7 +55,7 @@ class CrowdfundingRepository:
         self,
         page: int = 1,
         page_size: int = 10,
-        status: Optional[CrowdfundingStatus] = None
+        status: Optional[CrowdfundingStatus] = None,
     ) -> Tuple[List[Crowdfunding], int]:
         query = select(Crowdfunding).options(selectinload(Crowdfunding.project))
 

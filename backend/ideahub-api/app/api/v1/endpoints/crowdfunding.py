@@ -1,6 +1,7 @@
 """
 众筹相关 API
 """
+
 from uuid import UUID
 from typing import List, Optional
 from fastapi import APIRouter, Depends, Query, status
@@ -8,8 +9,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import get_db, get_current_user
 from app.schemas.crowdfunding import (
-    CrowdfundingCreate, CrowdfundingUpdate, CrowdfundingResponse,
-    CrowdfundingDetail, CrowdfundingStats, CrowdfundingList
+    CrowdfundingCreate,
+    CrowdfundingUpdate,
+    CrowdfundingResponse,
+    CrowdfundingDetail,
+    CrowdfundingStats,
+    CrowdfundingList,
 )
 from app.services.crowdfunding import CrowdfundingService
 from app.models.user import User
@@ -36,7 +41,7 @@ def crowdfunding_to_response(cf) -> CrowdfundingResponse:
         created_at=cf.created_at,
         updated_at=cf.updated_at,
         title=cf.project.title if cf.project else None,
-        description=cf.project.description if cf.project else None
+        description=cf.project.description if cf.project else None,
     )
 
 
@@ -51,7 +56,7 @@ async def list_crowdfundings(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
     status: Optional[str] = None,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """获取众筹列表"""
     repo = CrowdfundingRepository(db)
@@ -66,25 +71,25 @@ async def list_crowdfundings(
         items=[crowdfunding_to_response(cf) for cf in items],
         total=total,
         page=page,
-        page_size=page_size
+        page_size=page_size,
     )
 
 
 @router.get("/active", response_model=List[CrowdfundingResponse])
-async def list_active_crowdfundings(
-    db: AsyncSession = Depends(get_db)
-):
+async def list_active_crowdfundings(db: AsyncSession = Depends(get_db)):
     """获取进行中的众筹列表"""
     service = CrowdfundingService(db)
     items = await service.list_active()
     return [crowdfunding_to_response(cf) for cf in items]
 
 
-@router.post("", response_model=CrowdfundingResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "", response_model=CrowdfundingResponse, status_code=status.HTTP_201_CREATED
+)
 async def create_crowdfunding(
     data: CrowdfundingCreate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """创建众筹活动"""
     service = CrowdfundingService(db)
@@ -96,10 +101,7 @@ async def create_crowdfunding(
 
 
 @router.get("/{crowdfunding_id}", response_model=CrowdfundingResponse)
-async def get_crowdfunding(
-    crowdfunding_id: UUID,
-    db: AsyncSession = Depends(get_db)
-):
+async def get_crowdfunding(crowdfunding_id: UUID, db: AsyncSession = Depends(get_db)):
     """获取众筹详情"""
     service = CrowdfundingService(db)
     cf = await service.get_crowdfunding(crowdfunding_id)
@@ -108,8 +110,7 @@ async def get_crowdfunding(
 
 @router.get("/{crowdfunding_id}/stats", response_model=CrowdfundingStats)
 async def get_crowdfunding_stats(
-    crowdfunding_id: UUID,
-    db: AsyncSession = Depends(get_db)
+    crowdfunding_id: UUID, db: AsyncSession = Depends(get_db)
 ):
     """获取众筹统计"""
     service = CrowdfundingService(db)
@@ -119,8 +120,7 @@ async def get_crowdfunding_stats(
 
 @router.get("/project/{project_id}", response_model=CrowdfundingResponse)
 async def get_crowdfunding_by_project(
-    project_id: UUID,
-    db: AsyncSession = Depends(get_db)
+    project_id: UUID, db: AsyncSession = Depends(get_db)
 ):
     """根据项目获取众筹信息"""
     service = CrowdfundingService(db)
@@ -133,7 +133,7 @@ async def update_crowdfunding(
     crowdfunding_id: UUID,
     data: CrowdfundingUpdate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """更新众筹信息"""
     service = CrowdfundingService(db)
@@ -147,7 +147,7 @@ async def update_crowdfunding(
 async def start_crowdfunding(
     crowdfunding_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """启动众筹"""
     service = CrowdfundingService(db)

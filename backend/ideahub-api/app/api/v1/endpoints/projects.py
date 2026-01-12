@@ -1,6 +1,7 @@
 """
 项目相关 API
 """
+
 from uuid import UUID
 from typing import Optional
 from fastapi import APIRouter, Depends, Query, status
@@ -8,8 +9,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import get_db, get_current_user
 from app.schemas.project import (
-    ProjectCreate, ProjectUpdate, ProjectResponse,
-    ProjectDetail, ProjectList
+    ProjectCreate,
+    ProjectUpdate,
+    ProjectResponse,
+    ProjectDetail,
+    ProjectList,
 )
 from app.services.project import ProjectService
 from app.models.user import User
@@ -31,7 +35,7 @@ async def list_projects(
     category: Optional[ProjectCategory] = None,
     status: Optional[ProjectStatus] = None,
     keyword: Optional[str] = None,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """获取项目列表"""
     service = ProjectService(db)
@@ -40,7 +44,7 @@ async def list_projects(
         page_size=page_size,
         category=category,
         project_status=status,
-        keyword=keyword
+        keyword=keyword,
     )
 
 
@@ -48,7 +52,7 @@ async def list_projects(
 async def create_project(
     data: ProjectCreate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """创建项目"""
     service = ProjectService(db)
@@ -56,10 +60,7 @@ async def create_project(
 
 
 @router.get("/{project_id}", response_model=ProjectDetail)
-async def get_project(
-    project_id: UUID,
-    db: AsyncSession = Depends(get_db)
-):
+async def get_project(project_id: UUID, db: AsyncSession = Depends(get_db)):
     """获取项目详情"""
     service = ProjectService(db)
     project = await service.view_project(project_id)
@@ -71,7 +72,7 @@ async def update_project(
     project_id: UUID,
     data: ProjectUpdate,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """更新项目"""
     service = ProjectService(db)
@@ -82,7 +83,7 @@ async def update_project(
 async def delete_project(
     project_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """删除项目"""
     service = ProjectService(db)
@@ -93,7 +94,7 @@ async def delete_project(
 async def publish_project(
     project_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """发布项目"""
     service = ProjectService(db)
@@ -101,10 +102,7 @@ async def publish_project(
 
 
 @router.post("/{project_id}/like", response_model=ProjectResponse)
-async def like_project(
-    project_id: UUID,
-    db: AsyncSession = Depends(get_db)
-):
+async def like_project(project_id: UUID, db: AsyncSession = Depends(get_db)):
     """点赞项目"""
     service = ProjectService(db)
     return await service.like_project(project_id)

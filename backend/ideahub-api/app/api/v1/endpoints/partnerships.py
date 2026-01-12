@@ -1,6 +1,7 @@
 """
 合伙人相关 API
 """
+
 from uuid import UUID
 from typing import Optional
 from fastapi import APIRouter, Depends, Query, status
@@ -8,7 +9,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.deps import get_db, get_current_user
 from app.schemas.partnership import (
-    PartnershipApply, PartnershipResponse, PartnershipDetail, PartnershipList
+    PartnershipApply,
+    PartnershipResponse,
+    PartnershipDetail,
+    PartnershipList,
 )
 from app.schemas.user import UserBrief
 from app.services.partnership import PartnershipService
@@ -26,7 +30,7 @@ def partnership_to_detail(p) -> PartnershipDetail:
             id=p.user.id,
             nickname=p.user.nickname,
             avatar=p.user.avatar,
-            role=p.user.role
+            role=p.user.role,
         )
 
     return PartnershipDetail(
@@ -40,7 +44,7 @@ def partnership_to_detail(p) -> PartnershipDetail:
         application_message=p.application_message,
         status=p.status,
         created_at=p.created_at,
-        user=user_brief
+        user=user_brief,
     )
 
 
@@ -54,7 +58,7 @@ async def health_check():
 async def apply_partnership(
     data: PartnershipApply,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """申请成为合伙人"""
     service = PartnershipService(db)
@@ -67,15 +71,12 @@ async def get_my_applications(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """获取我的申请列表"""
     service = PartnershipService(db)
     items, total = await service.get_my_applications(current_user.id, page, page_size)
-    return PartnershipList(
-        items=[partnership_to_detail(p) for p in items],
-        total=total
-    )
+    return PartnershipList(items=[partnership_to_detail(p) for p in items], total=total)
 
 
 @router.get("/project/{project_id}", response_model=PartnershipList)
@@ -84,7 +85,7 @@ async def get_project_partnerships(
     status_filter: Optional[str] = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """获取项目的合伙人/申请列表"""
     service = PartnershipService(db)
@@ -98,17 +99,14 @@ async def get_project_partnerships(
     items, total = await service.get_project_partnerships(
         project_id, ps_status, page, page_size
     )
-    return PartnershipList(
-        items=[partnership_to_detail(p) for p in items],
-        total=total
-    )
+    return PartnershipList(items=[partnership_to_detail(p) for p in items], total=total)
 
 
 @router.post("/{partnership_id}/approve", response_model=PartnershipDetail)
 async def approve_partnership(
     partnership_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """批准合伙人申请"""
     service = PartnershipService(db)
@@ -120,7 +118,7 @@ async def approve_partnership(
 async def reject_partnership(
     partnership_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """拒绝合伙人申请"""
     service = PartnershipService(db)
@@ -132,7 +130,7 @@ async def reject_partnership(
 async def cancel_application(
     partnership_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """取消申请"""
     service = PartnershipService(db)
@@ -144,7 +142,7 @@ async def cancel_application(
 async def leave_partnership(
     partnership_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """退出合伙关系"""
     service = PartnershipService(db)

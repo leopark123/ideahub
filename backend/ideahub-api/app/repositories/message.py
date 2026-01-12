@@ -1,6 +1,7 @@
 """
 消息仓储
 """
+
 from typing import List, Tuple
 from uuid import UUID
 from sqlalchemy import select, func, or_, and_
@@ -17,28 +18,26 @@ class MessageRepository:
     async def get_by_id(self, message_id: UUID) -> Message:
         result = await self.db.execute(
             select(Message)
-            .options(
-                selectinload(Message.sender),
-                selectinload(Message.receiver)
-            )
+            .options(selectinload(Message.sender), selectinload(Message.receiver))
             .where(Message.id == message_id)
         )
         return result.scalar_one_or_none()
 
     async def get_conversation(
-        self,
-        user1_id: UUID,
-        user2_id: UUID,
-        page: int = 1,
-        page_size: int = 50
+        self, user1_id: UUID, user2_id: UUID, page: int = 1, page_size: int = 50
     ) -> Tuple[List[Message], int]:
-        query = select(Message).options(
-            selectinload(Message.sender),
-            selectinload(Message.receiver)
-        ).where(
-            or_(
-                and_(Message.sender_id == user1_id, Message.receiver_id == user2_id),
-                and_(Message.sender_id == user2_id, Message.receiver_id == user1_id)
+        query = (
+            select(Message)
+            .options(selectinload(Message.sender), selectinload(Message.receiver))
+            .where(
+                or_(
+                    and_(
+                        Message.sender_id == user1_id, Message.receiver_id == user2_id
+                    ),
+                    and_(
+                        Message.sender_id == user2_id, Message.receiver_id == user1_id
+                    ),
+                )
             )
         )
 
@@ -58,12 +57,8 @@ class MessageRepository:
 
     async def get_unread_count(self, user_id: UUID) -> int:
         result = await self.db.execute(
-            select(func.count())
-            .where(
-                and_(
-                    Message.receiver_id == user_id,
-                    Message.is_read == False
-                )
+            select(func.count()).where(
+                and_(Message.receiver_id == user_id, Message.is_read == False)
             )
         )
         return result.scalar()
@@ -76,13 +71,16 @@ class MessageRepository:
 
     async def mark_as_read(self, message: Message) -> Message:
         from datetime import datetime
+
         message.is_read = True
         message.read_at = datetime.utcnow()
         await self.db.commit()
         # 重新加载以获取完整的关系数据
         return await self.get_by_id(message.id)
 
-    async def mark_conversation_as_read(self, receiver_id: UUID, sender_id: UUID) -> int:
+    async def mark_conversation_as_read(
+        self, receiver_id: UUID, sender_id: UUID
+    ) -> int:
         from datetime import datetime
         from sqlalchemy import update
 
@@ -92,7 +90,7 @@ class MessageRepository:
                 and_(
                     Message.receiver_id == receiver_id,
                     Message.sender_id == sender_id,
-                    Message.is_read == False
+                    Message.is_read == False,
                 )
             )
             .values(is_read=True, read_at=datetime.utcnow())
@@ -114,19 +112,23 @@ class MessageRepository:
         from app.models.user import User
 
         # Step 1: 获取所有会话的对方用户ID和最后消息时间 (1次查询)
-        conv_subquery = select(
-            case(
-                (Message.sender_id == user_id, Message.receiver_id),
-                else_=Message.sender_id
-            ).label('other_user_id'),
-            func.max(Message.created_at).label('last_message_time')
-        ).where(
-            or_(Message.sender_id == user_id, Message.receiver_id == user_id)
-        ).group_by(literal_column('other_user_id')).subquery()
+        conv_subquery = (
+            select(
+                case(
+                    (Message.sender_id == user_id, Message.receiver_id),
+                    else_=Message.sender_id,
+                ).label("other_user_id"),
+                func.max(Message.created_at).label("last_message_time"),
+            )
+            .where(or_(Message.sender_id == user_id, Message.receiver_id == user_id))
+            .group_by(literal_column("other_user_id"))
+            .subquery()
+        )
 
         conv_result = await self.db.execute(
-            select(conv_subquery.c.other_user_id, conv_subquery.c.last_message_time)
-            .order_by(desc(conv_subquery.c.last_message_time))
+            select(
+                conv_subquery.c.other_user_id, conv_subquery.c.last_message_time
+            ).order_by(desc(conv_subquery.c.last_message_time))
         )
         conv_data = conv_result.all()
 
@@ -144,16 +146,17 @@ class MessageRepository:
         users_map = {user.id: user for user in users_result.scalars().all()}
 
         # Step 3: 批量获取每个会话的未读数 (1次查询)
-        unread_query = select(
-            Message.sender_id,
-            func.count().label('unread_count')
-        ).where(
-            and_(
-                Message.receiver_id == user_id,
-                Message.sender_id.in_(other_user_ids),
-                Message.is_read == False
+        unread_query = (
+            select(Message.sender_id, func.count().label("unread_count"))
+            .where(
+                and_(
+                    Message.receiver_id == user_id,
+                    Message.sender_id.in_(other_user_ids),
+                    Message.is_read == False,
+                )
             )
-        ).group_by(Message.sender_id)
+            .group_by(Message.sender_id)
+        )
 
         unread_result = await self.db.execute(unread_query)
         unread_map = {row[0]: row[1] for row in unread_result.all()}
@@ -165,10 +168,16 @@ class MessageRepository:
             time_conditions.append(
                 and_(
                     or_(
-                        and_(Message.sender_id == user_id, Message.receiver_id == other_id),
-                        and_(Message.sender_id == other_id, Message.receiver_id == user_id)
+                        and_(
+                            Message.sender_id == user_id,
+                            Message.receiver_id == other_id,
+                        ),
+                        and_(
+                            Message.sender_id == other_id,
+                            Message.receiver_id == user_id,
+                        ),
                     ),
-                    Message.created_at == last_time
+                    Message.created_at == last_time,
                 )
             )
 
@@ -181,9 +190,14 @@ class MessageRepository:
             # 构建映射: other_user_id -> last_message
             last_messages_map = {}
             for msg in last_messages:
-                other_id = msg.receiver_id if msg.sender_id == user_id else msg.sender_id
+                other_id = (
+                    msg.receiver_id if msg.sender_id == user_id else msg.sender_id
+                )
                 # 只保留每个会话的最新消息
-                if other_id not in last_messages_map or msg.created_at > last_messages_map[other_id].created_at:
+                if (
+                    other_id not in last_messages_map
+                    or msg.created_at > last_messages_map[other_id].created_at
+                ):
                     last_messages_map[other_id] = msg
         else:
             last_messages_map = {}
@@ -191,11 +205,13 @@ class MessageRepository:
         # 组装结果，保持按最后消息时间排序
         conversations = []
         for other_user_id in other_user_ids:
-            conversations.append({
-                'user_id': str(other_user_id),
-                'user': users_map.get(other_user_id),
-                'last_message': last_messages_map.get(other_user_id),
-                'unread_count': unread_map.get(other_user_id, 0)
-            })
+            conversations.append(
+                {
+                    "user_id": str(other_user_id),
+                    "user": users_map.get(other_user_id),
+                    "last_message": last_messages_map.get(other_user_id),
+                    "unread_count": unread_map.get(other_user_id, 0),
+                }
+            )
 
         return conversations
