@@ -3,20 +3,21 @@
 """
 
 from uuid import UUID
-from fastapi import APIRouter, Depends, Query, HTTPException, status
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_db, get_current_user
-from app.schemas.message import (
-    MessageCreate,
-    MessageResponse,
-    MessageList,
-    ConversationList,
-    ConversationSummary,
-)
-from app.repositories.message import MessageRepository
+from app.core.deps import get_current_user, get_db
 from app.models.message import Message
 from app.models.user import User
+from app.repositories.message import MessageRepository
+from app.schemas.message import (
+    ConversationList,
+    ConversationSummary,
+    MessageCreate,
+    MessageList,
+    MessageResponse,
+)
 
 router = APIRouter()
 

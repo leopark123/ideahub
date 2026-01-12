@@ -9,10 +9,10 @@
 
 import secrets
 import warnings
-from pydantic_settings import BaseSettings
-from pydantic import field_validator, computed_field
-from typing import List, Literal, Optional
+from typing import List, Literal
 
+from pydantic import computed_field, field_validator
+from pydantic_settings import BaseSettings
 
 # 开发环境默认 CORS 源
 DEV_CORS_ORIGINS = [

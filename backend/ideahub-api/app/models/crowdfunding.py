@@ -2,19 +2,21 @@
 众筹模型
 """
 
+import enum
 import uuid
+
 from sqlalchemy import (
     Column,
-    String,
-    Text,
-    ForeignKey,
-    Enum as SQLEnum,
-    Numeric,
     DateTime,
+    ForeignKey,
+    Numeric,
+    Text,
+)
+from sqlalchemy import (
+    Enum as SQLEnum,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-import enum
 
 from app.db.base import Base, TimestampMixin
 

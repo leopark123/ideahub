@@ -2,22 +2,23 @@
 项目相关 API
 """
 
-from uuid import UUID
 from typing import Optional
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_db, get_current_user
+from app.core.deps import get_current_user, get_db
+from app.models.project import ProjectCategory, ProjectStatus
+from app.models.user import User
 from app.schemas.project import (
     ProjectCreate,
-    ProjectUpdate,
-    ProjectResponse,
     ProjectDetail,
     ProjectList,
+    ProjectResponse,
+    ProjectUpdate,
 )
 from app.services.project import ProjectService
-from app.models.user import User
-from app.models.project import ProjectStatus, ProjectCategory
 
 router = APIRouter()
 

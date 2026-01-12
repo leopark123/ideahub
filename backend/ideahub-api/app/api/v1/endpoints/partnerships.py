@@ -2,22 +2,22 @@
 合伙人相关 API
 """
 
-from uuid import UUID
 from typing import Optional
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_db, get_current_user
+from app.core.deps import get_current_user, get_db
+from app.models.partnership import PartnershipStatus
+from app.models.user import User
 from app.schemas.partnership import (
     PartnershipApply,
-    PartnershipResponse,
     PartnershipDetail,
     PartnershipList,
 )
 from app.schemas.user import UserBrief
 from app.services.partnership import PartnershipService
-from app.models.user import User
-from app.models.partnership import PartnershipStatus
 
 router = APIRouter()
 

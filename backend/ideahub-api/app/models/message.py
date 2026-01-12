@@ -2,19 +2,22 @@
 消息模型
 """
 
+import enum
 import uuid
+
 from sqlalchemy import (
+    Boolean,
     Column,
+    DateTime,
+    ForeignKey,
     String,
     Text,
-    Boolean,
-    ForeignKey,
+)
+from sqlalchemy import (
     Enum as SQLEnum,
-    DateTime,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-import enum
 
 from app.db.base import Base, TimestampMixin
 

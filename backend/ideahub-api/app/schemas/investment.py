@@ -2,11 +2,12 @@
 投资相关 Schema
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional, List
-from uuid import UUID
 from datetime import datetime
 from decimal import Decimal
+from typing import List, Optional
+from uuid import UUID
+
+from pydantic import BaseModel, Field
 
 from app.models.investment import InvestmentStatus, PaymentMethod
 

@@ -7,13 +7,14 @@
 - 简单更新操作（如计数）不加载关系，提升性能
 """
 
-from typing import Optional, List, Tuple
+from typing import List, Optional, Tuple
 from uuid import UUID
-from sqlalchemy import select, func, or_
+
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models.project import Project, ProjectStatus, ProjectCategory
+from app.models.project import Project, ProjectCategory, ProjectStatus
 
 
 class ProjectRepository:

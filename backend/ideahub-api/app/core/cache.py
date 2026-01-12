@@ -8,12 +8,11 @@ Redis 缓存层
 - 缓存失效策略
 """
 
-import json
-import hashlib
 import functools
-from typing import Optional, Any, Callable, TypeVar, Union
-from datetime import timedelta
+import hashlib
+import json
 import logging
+from typing import Any, Callable, Optional, TypeVar
 
 logger = logging.getLogger("app.cache")
 
@@ -27,6 +26,7 @@ def get_redis():
     if _redis_client is None:
         try:
             import redis.asyncio as redis
+
             from app.core.config import settings
 
             _redis_client = redis.from_url(

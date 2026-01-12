@@ -8,16 +8,17 @@
 """
 
 import json
-from uuid import UUID
 from typing import Optional
+from uuid import UUID
+
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.project import Project, ProjectStatus, ProjectCategory
+from app.core.cache import invalidate_project_cache
+from app.models.project import Project, ProjectCategory, ProjectStatus
 from app.models.user import User
-from app.schemas.project import ProjectCreate, ProjectUpdate, ProjectList
 from app.repositories.project import ProjectRepository
-from app.core.cache import Cache, CacheKey, CacheTTL, invalidate_project_cache
+from app.schemas.project import ProjectCreate, ProjectList, ProjectUpdate
 
 
 class ProjectService:

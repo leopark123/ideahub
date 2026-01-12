@@ -10,10 +10,11 @@ IdeaHub API 入口
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from app.api.v1.router import api_router
 from app.core.config import settings
-from app.core.rate_limit import RateLimitMiddleware
 from app.core.logging_middleware import RequestLoggingMiddleware, setup_logging
+from app.core.rate_limit import RateLimitMiddleware
 from app.db.session import get_db_stats
 
 # 初始化日志系统

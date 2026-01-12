@@ -8,16 +8,15 @@
 - 支持结构化日志
 """
 
-import time
-import logging
 import json
+import logging
+import time
 from typing import Callable, Set
+
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.types import Message
 
 from app.core.config import settings
-
 
 # 配置日志记录器
 logger = logging.getLogger("api.access")

@@ -2,24 +2,24 @@
 众筹相关 API
 """
 
-from uuid import UUID
 from typing import List, Optional
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_db, get_current_user
+from app.core.deps import get_current_user, get_db
+from app.models.crowdfunding import CrowdfundingStatus
+from app.models.user import User
+from app.repositories.crowdfunding import CrowdfundingRepository
 from app.schemas.crowdfunding import (
     CrowdfundingCreate,
-    CrowdfundingUpdate,
-    CrowdfundingResponse,
-    CrowdfundingDetail,
-    CrowdfundingStats,
     CrowdfundingList,
+    CrowdfundingResponse,
+    CrowdfundingStats,
+    CrowdfundingUpdate,
 )
 from app.services.crowdfunding import CrowdfundingService
-from app.models.user import User
-from app.models.crowdfunding import CrowdfundingStatus
-from app.repositories.crowdfunding import CrowdfundingRepository
 
 router = APIRouter()
 

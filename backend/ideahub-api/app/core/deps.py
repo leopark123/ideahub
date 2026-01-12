@@ -3,11 +3,13 @@
 """
 
 from typing import AsyncGenerator
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.session import async_session
+
 from app.core.security import decode_token
+from app.db.session import async_session
 from app.models.user import User
 from app.repositories.user import UserRepository
 

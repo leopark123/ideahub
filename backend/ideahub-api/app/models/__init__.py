@@ -2,12 +2,12 @@
 数据库模型
 """
 
-from app.models.user import User, UserRole
-from app.models.project import Project, ProjectStatus, ProjectCategory
 from app.models.crowdfunding import Crowdfunding, CrowdfundingStatus
 from app.models.investment import Investment, InvestmentStatus, PaymentMethod
-from app.models.partnership import Partnership, PartnershipStatus, PartnershipRole
 from app.models.message import Message, MessageType
+from app.models.partnership import Partnership, PartnershipRole, PartnershipStatus
+from app.models.project import Project, ProjectCategory, ProjectStatus
+from app.models.user import User, UserRole
 
 __all__ = [
     "User",

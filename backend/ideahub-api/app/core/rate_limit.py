@@ -11,9 +11,9 @@
 """
 
 import time
-import hashlib
 from functools import wraps
-from typing import Optional, Callable
+from typing import Callable, Optional
+
 from fastapi import HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -28,6 +28,7 @@ def get_redis():
     if _redis_client is None:
         try:
             import redis.asyncio as redis
+
             from app.core.config import settings
 
             _redis_client = redis.from_url(

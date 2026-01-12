@@ -3,14 +3,15 @@
 """
 
 from uuid import UUID
+
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.partnership import Partnership, PartnershipStatus
 from app.models.user import User
-from app.schemas.partnership import PartnershipApply, PartnershipUpdate
 from app.repositories.partnership import PartnershipRepository
 from app.repositories.project import ProjectRepository
+from app.schemas.partnership import PartnershipApply
 
 
 class PartnershipService:

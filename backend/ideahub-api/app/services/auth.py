@@ -5,15 +5,15 @@
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.user import User
-from app.schemas.user import UserRegister, UserLogin, Token
-from app.repositories.user import UserRepository
 from app.core.security import (
-    get_password_hash,
-    verify_password,
     create_access_token,
     create_refresh_token,
+    get_password_hash,
+    verify_password,
 )
+from app.models.user import User
+from app.repositories.user import UserRepository
+from app.schemas.user import Token, UserLogin, UserRegister
 
 
 class AuthService:
@@ -80,7 +80,7 @@ class AuthService:
         except (ValueError, TypeError):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="无效的用户标识"
-            )
+            ) from None
 
         if not user:
             raise HTTPException(

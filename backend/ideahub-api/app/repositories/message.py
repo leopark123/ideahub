@@ -4,7 +4,8 @@
 
 from typing import List, Tuple
 from uuid import UUID
-from sqlalchemy import select, func, or_, and_
+
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -82,6 +83,7 @@ class MessageRepository:
         self, receiver_id: UUID, sender_id: UUID
     ) -> int:
         from datetime import datetime
+
         from sqlalchemy import update
 
         result = await self.db.execute(
@@ -108,7 +110,7 @@ class MessageRepository:
         - 优化后: 4 次查询 (100个会话 = 4次查询)
         """
         from sqlalchemy import case, desc, literal_column
-        from sqlalchemy.dialects.postgresql import aggregate_order_by
+
         from app.models.user import User
 
         # Step 1: 获取所有会话的对方用户ID和最后消息时间 (1次查询)

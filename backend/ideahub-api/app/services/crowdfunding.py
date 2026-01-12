@@ -3,22 +3,22 @@
 """
 
 import json
-from uuid import UUID
 from datetime import datetime
-from decimal import Decimal
+from uuid import UUID
+
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.crowdfunding import Crowdfunding, CrowdfundingStatus
-from app.models.project import Project, ProjectStatus
+from app.models.project import ProjectStatus
 from app.models.user import User
-from app.schemas.crowdfunding import (
-    CrowdfundingCreate,
-    CrowdfundingUpdate,
-    CrowdfundingStats,
-)
 from app.repositories.crowdfunding import CrowdfundingRepository
 from app.repositories.project import ProjectRepository
+from app.schemas.crowdfunding import (
+    CrowdfundingCreate,
+    CrowdfundingStats,
+    CrowdfundingUpdate,
+)
 
 
 class CrowdfundingService:

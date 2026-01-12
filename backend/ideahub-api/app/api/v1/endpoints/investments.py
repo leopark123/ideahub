@@ -3,13 +3,14 @@
 """
 
 from uuid import UUID
+
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_db, get_current_user
-from app.schemas.investment import InvestmentCreate, InvestmentResponse, InvestmentList
-from app.services.investment import InvestmentService
+from app.core.deps import get_current_user, get_db
 from app.models.user import User
+from app.schemas.investment import InvestmentCreate, InvestmentList, InvestmentResponse
+from app.services.investment import InvestmentService
 
 router = APIRouter()
 

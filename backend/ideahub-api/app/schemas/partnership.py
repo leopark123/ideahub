@@ -2,12 +2,13 @@
 合伙人相关 Schema
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional, List
-from uuid import UUID
 from datetime import datetime
+from typing import List, Optional
+from uuid import UUID
 
-from app.models.partnership import PartnershipStatus, PartnershipRole
+from pydantic import BaseModel, Field
+
+from app.models.partnership import PartnershipRole, PartnershipStatus
 from app.schemas.user import UserBrief
 
 

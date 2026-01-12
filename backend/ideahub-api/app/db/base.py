@@ -2,8 +2,8 @@
 SQLAlchemy Base
 """
 
-from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import Column, DateTime, func
+from sqlalchemy.orm import DeclarativeBase
 
 
 class Base(DeclarativeBase):

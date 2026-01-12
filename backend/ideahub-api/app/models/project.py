@@ -2,19 +2,21 @@
 项目模型
 """
 
+import enum
 import uuid
+
 from sqlalchemy import (
     Column,
+    ForeignKey,
+    Integer,
     String,
     Text,
-    Integer,
-    ForeignKey,
+)
+from sqlalchemy import (
     Enum as SQLEnum,
-    Numeric,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-import enum
 
 from app.db.base import Base, TimestampMixin
 
