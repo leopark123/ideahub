@@ -5,4 +5,4 @@ httpx>=0.26.0
 black>=24.1.0
 isort>=5.13.0
 mypy>=1.8.0
-ruff>=0.4.0
+ruff>=0.8.0
