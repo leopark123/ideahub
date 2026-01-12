@@ -1,9 +1,11 @@
 """
 创建测试数据脚本
 """
+
 import asyncio
 import sys
-sys.path.insert(0, '/app')
+
+sys.path.insert(0, "/app")
 
 from uuid import uuid4
 from datetime import datetime, timedelta
@@ -33,11 +35,36 @@ async def create_test_data():
         # 创建测试用户
         users = []
         user_data = [
-            {"email": "alice@test.com", "nickname": "Alice", "bio": "全栈开发工程师，5年经验", "skills": '["Python", "React", "Node.js"]'},
-            {"email": "bob@test.com", "nickname": "Bob", "bio": "产品经理，专注于用户体验设计", "skills": '["产品设计", "用户研究", "项目管理"]'},
-            {"email": "charlie@test.com", "nickname": "Charlie", "bio": "UI/UX设计师，热爱创新", "skills": '["Figma", "Sketch", "用户体验"]'},
-            {"email": "david@test.com", "nickname": "David", "bio": "市场营销专家，擅长增长黑客", "skills": '["市场营销", "数据分析", "内容运营"]'},
-            {"email": "eve@test.com", "nickname": "Eve", "bio": "数据分析师，Python爱好者", "skills": '["Python", "数据分析", "机器学习"]'},
+            {
+                "email": "alice@test.com",
+                "nickname": "Alice",
+                "bio": "全栈开发工程师，5年经验",
+                "skills": '["Python", "React", "Node.js"]',
+            },
+            {
+                "email": "bob@test.com",
+                "nickname": "Bob",
+                "bio": "产品经理，专注于用户体验设计",
+                "skills": '["产品设计", "用户研究", "项目管理"]',
+            },
+            {
+                "email": "charlie@test.com",
+                "nickname": "Charlie",
+                "bio": "UI/UX设计师，热爱创新",
+                "skills": '["Figma", "Sketch", "用户体验"]',
+            },
+            {
+                "email": "david@test.com",
+                "nickname": "David",
+                "bio": "市场营销专家，擅长增长黑客",
+                "skills": '["市场营销", "数据分析", "内容运营"]',
+            },
+            {
+                "email": "eve@test.com",
+                "nickname": "Eve",
+                "bio": "数据分析师，Python爱好者",
+                "skills": '["Python", "数据分析", "机器学习"]',
+            },
         ]
 
         for data in user_data:
@@ -168,11 +195,31 @@ async def create_test_data():
 
         # 创建一些消息
         messages = [
-            {"sender_idx": 1, "receiver_idx": 0, "content": "你好，我对你的智能家居项目很感兴趣，能详细介绍一下吗？"},
-            {"sender_idx": 0, "receiver_idx": 1, "content": "当然可以！我们计划开发一套完整的智能家居解决方案..."},
-            {"sender_idx": 2, "receiver_idx": 0, "content": "Alice，我是UI设计师，想申请加入你的团队"},
-            {"sender_idx": 3, "receiver_idx": 1, "content": "Bob，你的艺术教育平台什么时候上线？"},
-            {"sender_idx": 4, "receiver_idx": 2, "content": "健康饮食App的AI模型是自研的吗？"},
+            {
+                "sender_idx": 1,
+                "receiver_idx": 0,
+                "content": "你好，我对你的智能家居项目很感兴趣，能详细介绍一下吗？",
+            },
+            {
+                "sender_idx": 0,
+                "receiver_idx": 1,
+                "content": "当然可以！我们计划开发一套完整的智能家居解决方案...",
+            },
+            {
+                "sender_idx": 2,
+                "receiver_idx": 0,
+                "content": "Alice，我是UI设计师，想申请加入你的团队",
+            },
+            {
+                "sender_idx": 3,
+                "receiver_idx": 1,
+                "content": "Bob，你的艺术教育平台什么时候上线？",
+            },
+            {
+                "sender_idx": 4,
+                "receiver_idx": 2,
+                "content": "健康饮食App的AI模型是自研的吗？",
+            },
         ]
 
         for data in messages:
@@ -209,9 +256,9 @@ async def create_test_data():
         await db.commit()
         print(f"✓ 创建了 {len(investments)} 条投资记录")
 
-        print("\n" + "="*50)
+        print("\n" + "=" * 50)
         print("测试数据创建完成！")
-        print("="*50)
+        print("=" * 50)
         print("\n测试账号（密码都是 test123）：")
         for user in users:
             print(f"  - {user.email}")
