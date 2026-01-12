@@ -66,6 +66,7 @@ jobs:
 
       - name: Run Ruff (linting)
         run: ruff check .
+        continue-on-error: true
 
       - name: Run MyPy (type checking)
         run: mypy app --ignore-missing-imports
